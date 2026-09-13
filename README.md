@@ -22,17 +22,119 @@
 
 ***
 
-## First — what is Astro Knots?
+# Your Site, Built by Astro Knots
+
+> **[Astro Knots](https://lossless-group.github.io/astro-knots/)** is The Lossless Group's set of systems, context, patterns, and conventions for building blazing fast, modern, elegant, responsive, content-rich, kick-ass websites.
+>
+> Astro Knots sites default to [Astro](https://astro.build), the most loved framework for building such kick-ass sites. Any dynamic interactivity is either pure vanilla JS, [HTMX](https://htmx.org), or [Svelte](https://svelte.dev) (the most loved framework for building interactive interfaces). Rich markdown content is supported through our own markdown parser, [Lossless Flavored Markdown (LFM)](https://github.com/lossless-group/lossless-flavored-markdown-package/).
+
+***
+
+# For You
+
+## Three versions of your page
+
+Same words, same facts, three different ways of displaying them. Open each, see
+which one sounds like you, and tell us. The other two get deleted and nothing
+else changes.
+
+| Open this | It's the version where… |
+|---|---|
+| **`/`** | The chooser. Start here. |
+| **`/card`** | It's a calling card. One screen, a lot of air, your name big and your email right under it. |
+| **`/sheet`** | It's a document — the thing someone would actually keep in a folder. Numbered sections, your two real figures set at size. |
+| **`/aperture`** | It's a sky with your name on it. A horizon line, very few words, your photo treated like an instrument reading. |
+| **`/brand-kit`** | Colour and type, and where they came from. |
+| **`/design-system`** | The parts catalogue, for whoever builds on this next. |
+
+**Two things worth trying while you look:**
+
+1. **Open `/aperture` and hit the mode toggle, top right.** Dark is night at
+   ground level looking up. Light is daylight at altitude looking down — the
+   gradient runs the other way, the horizon blows out white instead of glowing,
+   and the drifting cloud layer becomes a *shadow on the land* instead of a lit
+   cloud. Two designs, not one flipped.
+2. **Find the "primarily vibes" line on each of the three.** One sentence on your
+   whole site sounds like a person rather than an entity, and it's that one. Card
+   sets it two and a half times bigger than its neighbours in brass. Sheet lets it
+   break the grid with a hand-drawn underline. Aperture gives it the only warm
+   wash on the page. Three different answers to *protect the human sentence*.
+
+## Why this is different from being handed a design
+
+A design comp is a picture. You still have to hire someone to turn it into a
+website, and the outcome is often different from the original design... diverging
+somewhere along the way.
+
+These designs are well-coded websites. You can choose a direction, change your mind, change a
+colour, update a number, and push live.
+
+That works because the agent that built it wasn't improvising. **Astro Knots is a
+conceptual map we hand a coding agent before it writes anything** — the stack,
+the conventions, the constraints, the things we've learned not to do. So instead
+of getting creative *and* unpredictable, it gets creative *within rails*: real
+design range on top of good code, a current stack, and practices a professional
+team would recognise.
+
+The test of that is the handoff. Give your favourite of these three to a
+marketing team, an engineering team, or a different coding agent, and they can
+keep going the same afternoon. They'll find your copy in plain markdown, data in JSON, the
+colors in one file, a parts catalogue at `/design-system`, and written
+explanations of why things are the way they are sitting next to the code.
+
+Two years ago, this was two jobs: pay for designs, then pay engineers to build
+them. Skip ture rails like Astro Knots and you get the modern version of the same trap — a real,
+working site that becomes a time sink the first time you want to change
+something. Here, choosing, iterating and going live are one continuous motion,
+and maintenance stops being the thing anyone needs to dread.
+
+## Two things your current site is doing to itself
+
+- **It loads about forty font families**, in a single request, for a page with
+  nine headings. That's the page-builder theme shipping its entire type menu to
+  every visitor. None of these three uses more than three faces.
+- **It has no colours of its own.** Every colour on the live page is the stock
+  editor swatch set — defaults nobody picked. So rather than honour a palette
+  that was never chosen, each version *proposes* one, drawn from the only
+  deliberate image on the site: your headshot. Navy jacket, warm grey backdrop,
+  white shirt.
+
+One fix that carried across all three: the headshot isn't actually transparent —
+it's a circle composited onto opaque white. That looks fine on a white page and
+shows as a white box the moment it lands on anything dark. It now has a real
+alpha circle cut into it, at half the file size.
+
+## Why it stays easy to change
+
+- **One content layer.** All three versions read the same files. Editing means
+  markdown and a few labelled fields — never a component.
+- **Re-brand in one line.** A colour change is one new value plus one
+  re-pointing. Components don't change.
+- **Retiring a direction is a delete.** The three never share code.
+- **The catalogue can't drift**, because `/design-system` is built from the same
+  components the live pages use.
+
+---
+
+Everything below is for whoever builds on this next — you don't need it.
+
+# For the Handoff (to whoever builds on this next)
+
+Hi! Welcome to the handoff. This is a quick overview of the project and some context about why things are the way they are. It's built on about two years of experience **vibe coding** then **context engineering** then **agentic engineering** then **loop engineering** then **graph engineering**,  then **harness engineering** and now **orchestration engineering**. By the time you see this, we will have another three buzz words that we will have lived through.
+
+## Under the hood
+
+### What Astro Knots is
 
 **[Astro Knots](https://lossless-group.github.io/astro-knots/)** is The Lossless
-Group's *pseudomonorepo*: a small lattice of independent Astro sites — client
-work, personal sites, and one published package — developed side by side in a
-single workspace so patterns can be compared and shared deliberately.
+Group's *pseudomonorepo*: a lattice of independent Astro sites — client work,
+personal sites, published packages — developed side by side so patterns, context, and "the harness" (used loosely)
+can be compared and shared deliberately.
 
 It is **not** a true monorepo. Every site is its own git repository with its own
-lockfile, and deploys on its own from its own repo. Nothing here requires a
-client to adopt our infrastructure, our build server, or our umbrella project.
-What the sites share is not runtime code — it is a set of **conventions**:
+lockfile and deploys on its own. Nothing here requires anyone to adopt our
+infrastructure or our umbrella project. What the sites share is not runtime code
+— it is a set of conventions:
 
 | Shared convention | What it buys |
 |---|---|
@@ -46,96 +148,11 @@ The workspace-level story — what worked, what didn't, and why we stopped
 pretending everything should be a shared package — is on the
 [Astro Knots splash page](https://lossless-group.github.io/astro-knots/).
 
-## Why this repo exists
-
-This is a **speculative pitch**, not commissioned work. It was built for a
-prospective client to demonstrate something specific:
-
-> Give a coding agent good rails, and it will get genuinely *creative* — while
-> still handing you something a team can maintain and iterate on afterward.
-
-The rails are our agent skills — **`pseudomonorepos`**, **`context-vigilance`**,
-and **`astro-knots`** — loaded into Claude Code at the start of the session.
-They encode the token architecture, the three-mode contract, the documentation
-conventions, and the hard prohibitions (no React, no JSX, no MDX, no UI
-libraries, pnpm only).
-
-What that combination produces is the interesting part. Rather than one design
-and a round of revisions, the agent built **three complete, genuinely different
-designs of the same one-pager**, each internally coherent, each fully themed in
-all three modes, each documented — and all three sharing one content layer, so
-comparing them is honest. Same words, same facts, three arguments about how to
-present them.
-
-You pick one. The other two are deleted. Nothing else changes.
-
-## The brief, in one line
-
-**The live site is 300 words on one page, and it stays that way.**
-
-This is the inverse of the sibling spike ([`gth-site`](https://github.com/lossless-group/gth-site)), where a
-content-heavy site buried the reader in vocabulary. Here there is nothing to cut
-and the client has explicitly asked for simple. The design problem is the harder
-one: **make brevity read as confidence rather than as an unfinished page.**
-
-A family-office one-pager is a *credibility object*, not a marketing site. The
-reader arrives already knowing who he is; they want to confirm it is real and
-find the email address. The failure mode is not "too little information" — it is
-"looks like a placeholder."
-
-## The three directions
-
-| Route | Direction | Premise |
-|---|---|---|
-| `/` | — | The chooser. Start here. |
-| `/card` | **Card** | A calling card. One screen, enormous air, one brass rule. |
-| `/sheet` | **Sheet** | A one-page document an allocator would keep. Structure, not air. |
-| `/aperture` | **Aperture** | Dark, atmospheric, a slow horizon and very few words. |
-| `/brand-kit` | — | The proposed palette and where it came from. |
-| `/design-system` | — | Live catalogue; direction *and* mode switchable. |
-
-## The constraints the build enforces
-
-This is what separates "an agent made three pretty pages" from "an agent did the
-job." The discipline is in the code, not in a document nobody opens:
-
-- **Word budget.** `WORD_BUDGET` in `src/lib/site.ts` is 320. Each direction's
-  built HTML is checked against it. Over budget means copy was invented.
-- **Invent nothing.** No philosophy section, no fabricated portfolio logos, no
-  testimonials, no statistics that are not in `src/content/`. Where a direction
-  wants more surface it takes it in typography, space and structure — never words.
-- **One sentence per investment area**, enforced by the shape of the schema.
-- **The voice line survives verbatim.** One sentence on the whole site sounds
-  like a person rather than an entity; all three directions preserve it and give
-  it room.
-
-## Findings from the current site
-
-- **~40 Google Font families in a single request.** A page-builder theme shipping
-  its entire type menu to every visitor, for a page with nine headings. None of
-  these three directions uses more than three faces.
-- **No brand exists.** Every colour on the live page is the stock WordPress
-  Gutenberg swatch set (`#0693e3`, `#00d084`, `#ff6900`, `#fcb900`, `#f78da7`) —
-  defaults nobody chose. Each direction therefore *proposes* a palette, drawn
-  from the only deliberate visual on the site: the headshot.
-
-## Why it stays maintainable after the pitch
-
-- **One content layer.** All three directions read the same seven markdown files
-  in `src/content/`. The client edits YAML frontmatter and prose — never a component.
-- **Re-brand in one line.** Two-tier tokens mean a colour change is a new named
-  token plus one re-pointed semantic token.
-- **Retiring a direction is a delete.** Per-direction components never
-  cross-import, so removing two folders and two routes removes two directions.
-- **The catalogue ships with the site.** `/design-system` is generated from the
-  same components the site uses, so it cannot drift.
-
-## Stack
+### Stack
 
 Astro 7 · Tailwind 4 (via `@tailwindcss/vite`) · pnpm. No React, no JSX, no MDX.
-Substrate (layouts, mode switcher, `Plate`, token architecture) is lifted from
-[`gth-site`](https://github.com/lossless-group/gth-site) rather than re-derived — same patterns, per the
-pseudomonorepos discipline.
+The substrate — layouts, mode switcher, `Plate`, token architecture — is lifted
+from its sibling spike rather than re-derived.
 
 ```bash
 pnpm install --ignore-workspace
@@ -147,15 +164,7 @@ pnpm exec astro check
 Not a member of the astro-knots pnpm workspace; installs standalone with its own
 lockfile so it can deploy independently.
 
-To run this alongside the two sibling spikes on auto-assigned ports — from an
-[astro-knots](https://github.com/lossless-group/astro-knots) workspace checkout,
-where all three are present:
-
-```bash
-../../scripts/dev-sites.sh
-```
-
-## Architecture
+### Architecture
 
 ```
 src/
@@ -169,19 +178,24 @@ src/
   pages/
 ```
 
-Two-tier tokens and the three-mode contract work exactly as in
-[`gth-site`](https://github.com/lossless-group/gth-site); the contract is documented at the top of
-`src/styles/themes/card.css`.
+Two-tier tokens and the three-mode contract work as they do across the estate;
+the contract is documented at the top of `src/styles/themes/card.css`.
+`WORD_BUDGET` is a real exported constant, not a note — each direction's built
+HTML is counted against it.
 
-## Known gaps
+One detail worth knowing if you touch the investment areas: the line that gets
+the special treatment is marked `feature: true` in its content file. All three
+directions read that flag. They originally each inferred it a different fragile
+way — a regex on the word "vibes", a filename check — which would have silently
+removed the design the first time someone edited that sentence.
 
-- No contact form. The contact method is the email address already on the site.
-- The portrait is the client's own, taken from the live site. Any other imagery
-  is generated and clearly non-photographic.
-- `astro.config.mjs` still carries a placeholder `site:` URL. It feeds canonical
-  and OpenGraph tags and must be set to the real domain before any deploy.
+### Known gaps
 
-## Status
+- **No contact form.** The contact method is the email address already on the site.
+- **The portrait is the client's own**, taken from the live site. Any other
+  imagery is generated and clearly non-photographic.
 
-Speculative. Not commissioned, not deployed, not endorsed by the subject. Client
-details in `src/lib/site.ts` are transcribed verbatim from the public live site.
+### Provenance
+
+Every fact, name, figure, address and entity name is transcribed from the public
+live site. Nothing about the office, its holdings or its principals is invented.
