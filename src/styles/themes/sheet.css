@@ -1,0 +1,122 @@
+/* ============================================================================
+ * DIRECTION B — "Sheet" · theme slug `sheet`
+ *
+ * TIER 2 semantic tokens. kebab-case only. Tier 1 `--color__*` / `--font__*`
+ * live in global.css and may be referenced ONLY from inside this file.
+ *
+ * The premise: a one-page document — the thing a serious allocator would
+ * actually keep in a folder. Not a website pretending to be a document; a
+ * document that happens to be a web page. Where Direction A spends air, this
+ * one spends STRUCTURE: short measures, aligned columns, hairlines doing all
+ * the separating, and every label, figure, entity, phone number and postal
+ * line set in the data face.
+ *
+ * PALETTE. The `Sheet` group from global.css, and almost nothing else.
+ * `--color__paper` is the desk; `--color__white` is the sheet lying on it, so
+ * the ground/surface split is literal rather than decorative. `--color__paper-
+ * rule` is the hairline. `--color__graphite` and `--color__graphite-mid` are
+ * the two ink weights. `--color__signal-blue` is the ONE non-neutral on the
+ * page and it is spent entirely on things you can click — links, the email,
+ * the phone number. Nothing is coloured for emphasis; emphasis is positional.
+ *
+ * `--color-accent` has one job here: it is the ink the FIGURES are set in.
+ * Four areas, four data points, and a document is where numbers belong — so
+ * the figure ink is promoted to its own token and tracked across modes.
+ *
+ * Mode intent
+ *   light   — white sheet on a warm-grey desk. The filed original. Default.
+ *   dark    — the same sheet under a lamp: graphite plane on near-black, ink
+ *             inverted to paper, the signal blue lifted so it survives.
+ *   vibrant — the sheet on a terminal. DARK-BASED; every ground, surface,
+ *             text and border set explicitly, never inherited from light.
+ *             Signal blue becomes the neon cyan; the figures pick up amber
+ *             and the only glow on the page.
+ * ========================================================================== */
+
+[data-theme="sheet"] {
+  /* One family, split by job. Plex Sans carries display AND body — a filed
+   * document does not change voice between its title and its paragraphs.
+   * Plex Mono carries every label, figure, entity name and postal line; that
+   * split is the whole reason this reads as filed rather than marketed. */
+  --font-display:  var(--font__plex-sans);
+  --font-body:     var(--font__plex-sans);
+  --font-data:     var(--font__plex-mono);
+  --font-eyebrow:  var(--font__plex-mono);
+
+  /* Hairlines over boxes. Nothing on this page has a corner radius. */
+  --radius-control: 0;
+  --page-measure:   68rem;
+  --page-gutter:    clamp(1.5rem, 4vw, 3.25rem);
+}
+
+/* --------------------------------------------------------------- light --- */
+[data-theme="sheet"][data-mode="light"] {
+  --color-background:     var(--color__paper);
+  --color-surface:        var(--color__white);
+  --color-surface-raised: color-mix(in srgb, var(--color__paper-rule) 38%, var(--color__white));
+
+  --color-text:           var(--color__graphite);
+  --color-text-muted:     var(--color__graphite-mid);
+  --color-text-faint:     color-mix(in srgb, var(--color__graphite-mid) 82%, var(--color__white));
+
+  --color-primary:        var(--color__signal-blue);
+  --color-primary-soft:   color-mix(in srgb, var(--color__signal-blue) 12%, transparent);
+  /* Figures are ink, not colour. Full graphite is the loudest thing allowed. */
+  --color-accent:         var(--color__graphite);
+
+  --color-border:         var(--color__paper-rule);
+  --color-rule:           color-mix(in srgb, var(--color__graphite) 46%, transparent);
+  --color-grid:           color-mix(in srgb, var(--color__graphite) 8%, transparent);
+
+  --fx-grain-opacity: 0.022;
+  --fx-glow-opacity:  0;
+}
+
+/* ---------------------------------------------------------------- dark --- */
+[data-theme="sheet"][data-mode="dark"] {
+  --color-background:     color-mix(in srgb, var(--color__graphite) 58%, var(--color__black));
+  --color-surface:        var(--color__graphite);
+  --color-surface-raised: color-mix(in srgb, var(--color__graphite-mid) 34%, var(--color__graphite));
+
+  --color-text:           var(--color__paper);
+  --color-text-muted:     var(--color__grey-pale);
+  --color-text-faint:     color-mix(in srgb, var(--color__grey-pale) 68%, var(--color__graphite));
+
+  /* Signal blue at its filed value is unreadable on graphite; it is lifted
+   * with paper until it clears contrast, and stays the only non-neutral. */
+  --color-primary:        color-mix(in srgb, var(--color__signal-blue) 48%, var(--color__paper));
+  --color-primary-soft:   color-mix(in srgb, var(--color__signal-blue) 34%, transparent);
+  --color-accent:         var(--color__paper);
+
+  --color-border:         color-mix(in srgb, var(--color__grey-pale) 20%, transparent);
+  --color-rule:           color-mix(in srgb, var(--color__grey-pale) 44%, transparent);
+  --color-grid:           color-mix(in srgb, var(--color__grey-pale) 10%, transparent);
+
+  --fx-grain-opacity: 0.04;
+  --fx-glow-opacity:  0.1;
+}
+
+/* ------------------------------------------------------------- vibrant --- */
+/* DARK-BASED. Nothing inherits from light — ground, surface, ink, border and
+ * rule are all restated here on purpose. */
+[data-theme="sheet"][data-mode="vibrant"] {
+  --color-background:     var(--color__black);
+  --color-surface:        color-mix(in srgb, var(--color__navy-mid) 22%, var(--color__black));
+  --color-surface-raised: color-mix(in srgb, var(--color__navy-mid) 44%, var(--color__black));
+
+  --color-text:           var(--color__white);
+  --color-text-muted:     color-mix(in srgb, var(--color__neon-cyan) 40%, var(--color__grey-pale));
+  --color-text-faint:     color-mix(in srgb, var(--color__neon-cyan) 62%, var(--color__black));
+
+  --color-primary:        var(--color__neon-cyan);
+  --color-primary-soft:   color-mix(in srgb, var(--color__neon-cyan) 22%, transparent);
+  /* The four figures are the only place the sheet is allowed to burn. */
+  --color-accent:         var(--color__neon-amber);
+
+  --color-border:         color-mix(in srgb, var(--color__neon-cyan) 26%, transparent);
+  --color-rule:           color-mix(in srgb, var(--color__neon-cyan) 54%, transparent);
+  --color-grid:           color-mix(in srgb, var(--color__neon-cyan) 14%, transparent);
+
+  --fx-grain-opacity: 0.05;
+  --fx-glow-opacity:  0.42;
+}

@@ -1,0 +1,61 @@
+---
+export type Direction = 'card' | 'sheet' | 'aperture';
+export type Mode = 'light' | 'dark' | 'vibrant';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  theme?: Direction;
+  mode?: Mode;
+}
+
+const {
+  title = 'Dominocielo',
+  description =
+    'Your mouth is full of bacteria. Some of them protect you and some of them make you ill. A saliva test tells you which ones you have.',
+  theme = 'card',
+  mode = 'light',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class={`theme-${theme} theme-transition`} data-theme={theme} data-mode={mode}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {/* Prototype build over a live client's content. Stays out of every index. */}
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap"
+    />
+    <script is:inline>
+      /* Pre-paint MODE application only. Mode is a viewer preference and
+       * persists across routes. Theme (direction) is determined by the ROUTE
+       * and is deliberately NOT restored from storage here -- restoring it
+       * would repaint /atlas in the journal palette for one frame and then
+       * fight the page for the rest of the session. */
+      (function () {
+        try {
+          var m = localStorage.getItem('mode');
+          if (m === 'light' || m === 'dark' || m === 'vibrant') {
+            document.documentElement.setAttribute('data-mode', m);
+            document.documentElement.classList.toggle('dark', m !== 'light');
+          } else {
+            var pinned = document.documentElement.getAttribute('data-mode');
+            document.documentElement.classList.toggle('dark', pinned !== 'light');
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="sr-only" href="#main">Skip to content</a>
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,92 @@
+---
+/* ============================================================================
+ * CardIdentity — the face of the card.
+ *
+ * Four lines and nothing else: what the office is, its name at real scale,
+ * where it is, and the address you would actually write to. The email is the
+ * only call to action on the page and is deliberately the second-largest
+ * thing on it, so it is legible from the top of the screen without scrolling
+ * or scanning. It carries one of this direction's two spends of brass.
+ *
+ * Instrument Serif has a single weight and a high contrast axis: set at 8rem
+ * it still cannot shout. That is the discipline the direction is built on.
+ *
+ * Tokens read: --font-eyebrow, --font-display, --font-data, --color-text,
+ *   --color-text-muted, --color-accent.
+ * ========================================================================== */
+export interface Props {
+  /** e.g. "Single-family office" */
+  kind: string;
+  /** The office name. This is the page's h1. */
+  name: string;
+  city: string;
+  email: string;
+}
+
+const { kind, name, city, email } = Astro.props;
+---
+
+<section class="identity" aria-labelledby="office-name">
+  <p class="identity-kind">{kind}</p>
+  <h1 class="identity-name" id="office-name">{name}</h1>
+  <p class="identity-city tabular">{city}</p>
+  <a class="identity-email" href={`mailto:${email}`}>{email}</a>
+</section>
+
+<style>
+  .identity {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .identity-kind {
+    margin: 0;
+    font-family: var(--font-eyebrow);
+    font-size: 0.6875rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .identity-name {
+    margin: clamp(0.75rem, 2vw, 1.5rem) 0 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(2.75rem, 12vw, 8rem);
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+    /* A surname is never hyphenated, but it must never bleed either. */
+    hyphens: none;
+    overflow-wrap: break-word;
+  }
+
+  .identity-city {
+    margin: clamp(0.9rem, 2vw, 1.35rem) 0 0;
+    font-size: 0.8125rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .identity-email {
+    margin-top: clamp(1.75rem, 5vw, 3rem);
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 4.2vw, 2.5rem);
+    line-height: 1.1;
+    /* SPEND 1 of 2. The email is the only thing a visitor has to do. */
+    color: var(--color-accent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 0.08em;
+    transition: border-color 180ms ease;
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+
+  .identity-email:hover,
+  .identity-email:focus-visible {
+    border-bottom-color: var(--color-accent);
+  }
+</style>

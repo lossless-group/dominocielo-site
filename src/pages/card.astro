@@ -1,0 +1,239 @@
+---
+/* ============================================================================
+ * DIRECTION A — "Card"
+ *
+ * The premise: the site is a calling card, and 300 words is the asset rather
+ * than the problem. Everything here is an argument for that: one h1 at real
+ * scale, one hairline, one accent spent twice, no nav, no panels, no rounding,
+ * and a great deal of space that is held rather than filled.
+ *
+ * Composition, top to bottom:
+ *   chrome     way back to the chooser + mode toggle, small, top corner
+ *   identity   what the office is / its name / where / the email          <- CTA
+ *   duo        the family and the principal, two columns of prose
+ *   areas      four lines, one of which is allowed to speak
+ *   giving     the fund, and where to read about it
+ *   contact    particulars, below the page's single rule
+ *
+ * Every fact on this page comes from src/content/ or src/lib/site.ts. The
+ * only strings authored here are three structural labels ("Investment",
+ * "Contact", "Directions") and the document title.
+ * ========================================================================== */
+import BaseThemeLayout from '@layouts/BaseThemeLayout.astro';
+import CardGrain from '@components/card/CardGrain.astro';
+import CardChrome from '@components/card/CardChrome.astro';
+import CardIdentity from '@components/card/CardIdentity.astro';
+import CardNote from '@components/card/CardNote.astro';
+import CardAreas from '@components/card/CardAreas.astro';
+import type { AreaItem } from '@components/card/CardAreas.astro';
+import CardContact from '@components/card/CardContact.astro';
+import { PRINCIPAL, OFFICE, GIVING, SOCIAL } from '@lib/site';
+import { getCollection, render } from 'astro:content';
+
+/* The one row that gets scale and brass. Keyed by file id so the choice is
+ * explicit rather than an index that silently shifts if a file is added. */
+const VOICE_AREA_ID = '2-startups';
+
+const areaEntries = (await getCollection('areas')).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+const areas: AreaItem[] = areaEntries.map((entry) => ({
+  name: entry.data.name,
+  line: entry.data.line,
+  /* Two areas carry a registered entity, two carry a figure. Each row gets
+   * exactly one marker, so the column never reads as half-filled. */
+  entity: entry.data.entity,
+  figure: entry.data.figure,
+  figure_label: entry.data.figure_label,
+  voice: entry.data.feature ?? entry.id === VOICE_AREA_ID,
+}));
+
+const sectionEntries = await getCollection('sections');
+
+function section(slugId: string) {
+  const found = sectionEntries.find((entry) => entry.data.slug_id === slugId);
+  if (!found) throw new Error(`[card] missing section: ${slugId}`);
+  return found;
+}
+
+const family = section('family');
+const principal = section('principal');
+const giving = section('giving');
+
+const { Content: FamilyBody } = await render(family);
+const { Content: PrincipalBody } = await render(principal);
+const { Content: GivingBody } = await render(giving);
+---
+
+<BaseThemeLayout
+  title="Dominocielo"
+  description={`${OFFICE.kind} in ${OFFICE.city}.`}
+  theme="card"
+  mode="light"
+>
+  <CardGrain />
+
+  <div class="page">
+    <CardChrome href="/" label="Directions" />
+
+    <main id="main" class="card">
+      <CardIdentity
+        kind={OFFICE.kind}
+        name={OFFICE.name}
+        city={OFFICE.city}
+        email={OFFICE.email}
+      />
+
+      <div class="duo">
+        <CardNote
+          id="family"
+          eyebrow={family.data.eyebrow ?? ''}
+          title={family.data.title}
+          lead={family.data.lead}
+        >
+          <FamilyBody />
+        </CardNote>
+
+        <CardNote
+          id="principal"
+          eyebrow={principal.data.eyebrow ?? ''}
+          title={principal.data.title}
+          lead={principal.data.lead}
+        >
+          <PrincipalBody />
+          <img
+            slot="aside"
+            class="portrait"
+            src={PRINCIPAL.portrait}
+            alt={PRINCIPAL.portrait_alt}
+            width="968"
+            height="968"
+            loading="lazy"
+            decoding="async"
+          />
+        </CardNote>
+      </div>
+
+      <CardAreas items={areas} eyebrow="Investment" />
+
+      <CardNote
+        id="giving"
+        eyebrow={giving.data.eyebrow ?? ''}
+        title={giving.data.title}
+        lead={giving.data.lead}
+      >
+        <GivingBody />
+        <p slot="aside" class="giving-mark tabular">
+          <span>{GIVING.fund}</span>
+          <span>{GIVING.principal}</span>
+          <a class="giving-link" href={GIVING.url} rel="noopener noreferrer" target="_blank">
+            {GIVING.label}
+          </a>
+        </p>
+      </CardNote>
+    </main>
+
+    <CardContact
+      addressLine={OFFICE.address_line}
+      addressCity={OFFICE.address_city}
+      email={OFFICE.email}
+      phone={OFFICE.phone}
+      phoneHref={OFFICE.phone_href}
+      social={SOCIAL}
+    />
+  </div>
+</BaseThemeLayout>
+
+<style>
+  .page {
+    position: relative;
+    /* Above the grain layer. */
+    z-index: 1;
+    width: 100%;
+    max-width: var(--page-measure);
+    margin-inline: auto;
+    padding-inline: var(--page-gutter);
+    padding-block: clamp(1.25rem, 3vw, 2.25rem) clamp(2rem, 5vw, 3.25rem);
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2.5rem, 6vw, 4.5rem);
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2.75rem, 7vw, 5rem);
+    /* Pushes the contact rule to the bottom edge on tall viewports, so the
+     * air collects in the middle of the card instead of under it. */
+    flex: 1 1 auto;
+  }
+
+  /* The identity block gets the first screen mostly to itself. */
+  .card > :global(.identity) {
+    padding-block: clamp(1.5rem, 6vw, 4rem) 0;
+  }
+
+  .duo {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(2.5rem, 6vw, 4rem);
+  }
+
+  @media (min-width: 56rem) {
+    .duo {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 4rem;
+    }
+  }
+
+  /* The portrait, used once and small. It is already circularly cropped with
+   * transparent corners, so it keys onto bone, navy and black alike — no
+   * frame, no radius, no shadow, nothing to un-round. */
+  .portrait {
+    display: block;
+    width: clamp(4.5rem, 9vw, 6.5rem);
+    height: auto;
+    margin-top: clamp(1.5rem, 3vw, 2.25rem);
+  }
+
+  .giving-mark {
+    margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.35rem 0.85rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+  }
+
+  /* Separators are decoration and stay out of the markup. */
+  .giving-mark > * + *::before {
+    content: '\00B7';
+    margin-right: 0.85rem;
+    color: var(--color-text-faint);
+  }
+
+  .giving-link {
+    color: var(--color-text);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 0.12em;
+    transition: border-color 160ms ease;
+  }
+
+  .giving-link:hover,
+  .giving-link:focus-visible {
+    border-bottom-color: var(--color-text);
+  }
+</style>
+
+<style is:global>
+  /* --radius-control is 0 in this direction: nothing on the page is rounded,
+   * including the borrowed chrome. */
+  [data-theme='card'] .theme-mode-toggle {
+    border-radius: var(--radius-control);
+  }
+</style>

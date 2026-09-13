@@ -1,0 +1,232 @@
+/* ============================================================================
+ * DIRECTION C — "Aperture" · theme slug `aperture`
+ *
+ * TIER 2 semantic tokens. kebab-case only. Tier 1 `--color__*` / `--font__*`
+ * live in global.css and may be referenced ONLY from inside this file.
+ *
+ * The premise: atmosphere, and very few words. The page is a ground, not a
+ * background — a lot of empty sky, a faint terminator low down, a name written
+ * across it. The reader should feel altitude before they read a syllable, and
+ * then find four areas and an email inside two seconds.
+ *
+ * ---------------------------------------------------------------------------
+ * THE TOKEN CONTRACT (identical set in card.css and sheet.css)
+ *
+ *   type      --font-display  --font-body  --font-data  --font-eyebrow
+ *   ground    --color-background  --color-surface  --color-surface-raised
+ *   ink       --color-text  --color-text-muted  --color-text-faint
+ *   signal    --color-primary  --color-primary-soft  --color-accent
+ *   lines     --color-border  --color-rule  --color-grid
+ *   shape     --radius-control  --page-measure  --page-gutter
+ *   effects   --fx-grain-opacity  --fx-glow-opacity
+ *
+ * DIRECTION-LOCAL EXTENSIONS. Still Tier 2, still kebab-case, still declared
+ * here and nowhere else. The `sky-*` group is the ground; the `portrait-*`
+ * group is the one photograph's treatment. Components read these by name and
+ * never learn what colour they resolve to.
+ *
+ *   sky       --sky-zenith  --sky-high  --sky-horizon  --sky-ground
+ *             --sky-terminator  --sky-terminator-y  --sky-glow-blend
+ *             --sky-drift  --sky-drift-blend
+ *   portrait  --portrait-wash  --portrait-wash-blend  --portrait-wash-opacity
+ *             --portrait-vignette  --portrait-ring  --portrait-halo
+ *
+ * ---------------------------------------------------------------------------
+ * THE TWO SIGNALS, AND THEIR DIFFERENT JOBS
+ *
+ *   --color__dawn (→ --color-primary) is WARMTH AND THE PERSON. It is the
+ *     terminator on the horizon, the wash over the portrait, the rule beside
+ *     the one line on this page with a human voice in it, and the email
+ *     address. Anything a reader might reach out and touch is dawn-coloured.
+ *
+ *   --color__sar-cyan (→ --color-accent) is INSTRUMENT AND MEASUREMENT. It is
+ *     eyebrows, figures, the tick ring around the portrait, hairline rules and
+ *     borders. It never carries prose and it never marks an action. It is the
+ *     colour of the thing doing the looking, not the thing being looked at.
+ *
+ * Keeping those two jobs separate is what stops the page reading as "a dark
+ * site with two accent colours".
+ *
+ * ---------------------------------------------------------------------------
+ * MODE INTENT
+ *
+ *   dark    — authored default. Night ground, empty sky, a low dawn
+ *             terminator. Everything else is calibrated against this.
+ *
+ *   light   — NOT an inversion. Dark mode is night at ground level looking
+ *             up; light mode is DAYLIGHT AT ALTITUDE looking down. Two
+ *             consequences, both structural rather than cosmetic:
+ *             (1) The gradient runs the other way. At altitude the thin
+ *                 atmosphere overhead holds colour and the horizon bleaches
+ *                 out, so `--sky-zenith` carries the most chroma and
+ *                 `--sky-horizon` goes to flat white. In dark mode the
+ *                 zenith is the emptiest thing on the page. The sky is not
+ *                 flipped, it is a different sky.
+ *             (2) The terminator becomes OVEREXPOSURE, not glow — a white
+ *                 bloom screened over an already-white horizon — and the
+ *                 warmth relocates BELOW it: --color-background (and with it
+ *                 --sky-ground) becomes warm paper rather than cool paper,
+ *                 because below this horizon you are looking at land.
+ *             The drift layer also changes sign: `--sky-drift-blend` goes
+ *             from `screen` (a lit cloud) to `multiply` (a cloud SHADOW on
+ *             the land). Same element, opposite physics, correct in both.
+ *             Dawn and sar-cyan are both far too pale to carry text on white,
+ *             so both are re-mixed toward navy ink — the signals keep their
+ *             identity (bronze is still dawn, slate-teal is still cyan) while
+ *             clearing 4.5:1.
+ *
+ *   vibrant — DARK-BASED. Nothing inherits from light. Black ground, neon
+ *             phosphors, the terminator pushed to a hard amber band.
+ * ========================================================================== */
+
+[data-theme="aperture"] {
+  /* Spectral has a real light weight and holds its colour at 300 — it can be
+   * set enormous and still whisper, which is the entire premise here. */
+  --font-display:  var(--font__spectral);
+  --font-body:     var(--font__inter);
+  --font-data:     var(--font__plex-mono);
+  --font-eyebrow:  var(--font__plex-mono);
+
+  /* Round. Every control on this page is a lens or an iris. */
+  --radius-control: 999px;
+  /* Narrow on purpose: very few words per line, and none per screen. */
+  --page-measure:   58rem;
+  --page-gutter:    clamp(1.5rem, 7vw, 6rem);
+
+  /* Where the horizon sits inside the sky element. Mode-invariant: the
+   * composition holds, only the atmosphere above and below it changes. */
+  --sky-terminator-y: 61%;
+}
+
+/* ---------------------------------------------------------------- dark --- */
+/* The authored default. Night below, a faint dawn terminator, empty sky. */
+[data-theme="aperture"][data-mode="dark"] {
+  --color-background:     var(--color__void-night);
+  --color-surface:        color-mix(in srgb, var(--color__horizon) 22%, var(--color__void-night));
+  --color-surface-raised: color-mix(in srgb, var(--color__horizon) 40%, var(--color__void-night));
+
+  --color-text:           var(--color__shirt);
+  --color-text-muted:     color-mix(in srgb, var(--color__grey-pale) 84%, var(--color__void-night));
+  --color-text-faint:     color-mix(in srgb, var(--color__grey-pale) 58%, var(--color__void-night));
+
+  --color-primary:        var(--color__dawn);
+  --color-primary-soft:   color-mix(in srgb, var(--color__dawn) 17%, transparent);
+  --color-accent:         var(--color__sar-cyan);
+
+  --color-border:         color-mix(in srgb, var(--color__sar-cyan) 22%, transparent);
+  --color-rule:           color-mix(in srgb, var(--color__sar-cyan) 42%, transparent);
+  --color-grid:           color-mix(in srgb, var(--color__grey-pale) 12%, transparent);
+
+  --fx-grain-opacity: 0.055;
+  --fx-glow-opacity:  0.50;
+
+  /* Sky: darkest overhead, a slow lift into the horizon band, then back down
+   * into the page's own ground. */
+  --sky-zenith:      var(--color__void-deep);
+  --sky-high:        var(--color__void-night);
+  --sky-horizon:     color-mix(in srgb, var(--color__horizon) 58%, var(--color__void-night));
+  /* The ground below the horizon IS the page. Keying it to --color-background
+   * in every mode is what guarantees the sky element's bottom edge and the
+   * body meet with no seam, at any sky height. */
+  --sky-ground:      var(--color-background);
+  --sky-terminator:  var(--color__dawn);
+  --sky-glow-blend:  screen;
+  --sky-drift:       var(--color__sar-cyan);
+  --sky-drift-blend: screen;
+
+  --portrait-wash:         var(--color__dawn);
+  --portrait-wash-blend:   soft-light;
+  --portrait-wash-opacity: 0.42;
+  --portrait-vignette:     color-mix(in srgb, var(--color__void-night) 96%, transparent);
+  --portrait-ring:         color-mix(in srgb, var(--color__sar-cyan) 30%, transparent);
+  --portrait-halo:         color-mix(in srgb, var(--color__dawn) 40%, transparent);
+}
+
+/* --------------------------------------------------------------- light --- */
+/* Daylight at altitude. See MODE INTENT above — this is a different sky, not
+ * the dark one with its colours reversed. */
+[data-theme="aperture"][data-mode="light"] {
+  /* Warm paper, not cool paper: below this horizon you are looking at land.
+   * The cool chroma lives overhead, in --sky-zenith. */
+  --color-background:     color-mix(in srgb, var(--color__dawn) 7%, var(--color__shirt));
+  --color-surface:        var(--color__white);
+  --color-surface-raised: color-mix(in srgb, var(--color__horizon) 9%, var(--color__white));
+
+  --color-text:           var(--color__navy-ink);
+  --color-text-muted:     color-mix(in srgb, var(--color__navy-ink) 68%, var(--color__white));
+  --color-text-faint:     color-mix(in srgb, var(--color__navy-ink) 46%, var(--color__white));
+
+  /* Dawn at full strength is a 3:1 wash on white. Re-mixed toward navy it
+   * lands as bronze — still unmistakably the warm signal, now legible. */
+  --color-primary:        color-mix(in srgb, var(--color__dawn) 42%, var(--color__navy-ink));
+  --color-primary-soft:   color-mix(in srgb, var(--color__dawn) 26%, transparent);
+  /* Same move for the instrument signal: slate-teal, not sky-blue. */
+  --color-accent:         color-mix(in srgb, var(--color__sar-cyan) 34%, var(--color__navy-ink));
+
+  --color-border:         color-mix(in srgb, var(--color__navy-ink) 17%, transparent);
+  --color-rule:           color-mix(in srgb, var(--color__navy-ink) 34%, transparent);
+  --color-grid:           color-mix(in srgb, var(--color__navy-ink) 9%, transparent);
+
+  /* Overexposed film, not a clean render. */
+  --fx-grain-opacity: 0.045;
+  --fx-glow-opacity:  0.62;
+
+  /* Chroma overhead, blown out at the horizon, warm land underneath. */
+  --sky-zenith:      color-mix(in srgb, var(--color__horizon) 17%, var(--color__shirt));
+  --sky-high:        color-mix(in srgb, var(--color__horizon) 7%, var(--color__shirt));
+  --sky-horizon:     var(--color__white);
+  --sky-ground:      var(--color-background);
+  --sky-terminator:  var(--color__white);
+  --sky-glow-blend:  screen;
+  /* A cloud shadow on the land rather than a lit cloud in the dark. */
+  --sky-drift:       color-mix(in srgb, var(--color__horizon) 24%, var(--color__white));
+  --sky-drift-blend: multiply;
+
+  --portrait-wash:         var(--color__dawn);
+  --portrait-wash-blend:   soft-light;
+  --portrait-wash-opacity: 0.24;
+  /* The rim dissolves into white — the portrait is overexposed at its edge,
+   * the same way everything else near this horizon is. */
+  --portrait-vignette:     color-mix(in srgb, var(--color__white) 90%, transparent);
+  --portrait-ring:         color-mix(in srgb, var(--color__navy-ink) 26%, transparent);
+  --portrait-halo:         color-mix(in srgb, var(--color__navy-ink) 22%, transparent);
+}
+
+/* ------------------------------------------------------------- vibrant --- */
+/* DARK-BASED. Nothing inherits from light. */
+[data-theme="aperture"][data-mode="vibrant"] {
+  --color-background:     var(--color__black);
+  --color-surface:        color-mix(in srgb, var(--color__horizon) 34%, var(--color__black));
+  --color-surface-raised: color-mix(in srgb, var(--color__horizon) 56%, var(--color__black));
+
+  --color-text:           var(--color__white);
+  --color-text-muted:     color-mix(in srgb, var(--color__neon-cyan) 30%, var(--color__grey-pale));
+  --color-text-faint:     color-mix(in srgb, var(--color__neon-cyan) 62%, transparent);
+
+  --color-primary:        var(--color__neon-amber);
+  --color-primary-soft:   color-mix(in srgb, var(--color__neon-amber) 26%, transparent);
+  --color-accent:         var(--color__neon-cyan);
+
+  --color-border:         color-mix(in srgb, var(--color__neon-cyan) 34%, transparent);
+  --color-rule:           color-mix(in srgb, var(--color__neon-cyan) 58%, transparent);
+  --color-grid:           color-mix(in srgb, var(--color__neon-cyan) 14%, transparent);
+
+  --fx-grain-opacity: 0.07;
+  --fx-glow-opacity:  0.78;
+
+  --sky-zenith:      var(--color__black);
+  --sky-high:        var(--color__black);
+  --sky-horizon:     color-mix(in srgb, var(--color__horizon) 76%, var(--color__black));
+  --sky-ground:      var(--color-background);
+  --sky-terminator:  var(--color__neon-amber);
+  --sky-glow-blend:  screen;
+  --sky-drift:       var(--color__neon-rose);
+  --sky-drift-blend: screen;
+
+  --portrait-wash:         var(--color__neon-amber);
+  --portrait-wash-blend:   color;
+  --portrait-wash-opacity: 0.50;
+  --portrait-vignette:     color-mix(in srgb, var(--color__black) 97%, transparent);
+  --portrait-ring:         color-mix(in srgb, var(--color__neon-cyan) 46%, transparent);
+  --portrait-halo:         color-mix(in srgb, var(--color__neon-amber) 55%, transparent);
+}

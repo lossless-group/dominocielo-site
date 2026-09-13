@@ -1,0 +1,38 @@
+---
+/* ============================================================================
+ * Terminator — the section divider. A very shallow arc rather than a straight
+ * rule: at this altitude a horizon is curved, and a curved hairline is the
+ * cheapest way to say so without saying it.
+ *
+ * Decorative. aria-hidden, and it carries no semantics an <hr> would.
+ * ========================================================================== */
+export interface Props {
+  /** `signal` tints the arc with the warm signal instead of the instrument one. */
+  tone?: 'rule' | 'signal';
+}
+const { tone = 'rule' } = Astro.props;
+---
+
+<div class={`terminator tone-${tone}`} aria-hidden="true">
+  <svg viewBox="0 0 1200 40" preserveAspectRatio="none" fill="none" focusable="false">
+    <path d="M0 36 C 300 4, 900 4, 1200 36" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke" />
+  </svg>
+</div>
+
+<style>
+  .terminator {
+    display: block;
+    width: 100%;
+    height: 2.5rem;
+    /* Spacing belongs to the parent's grid gap. Margins here would stack with
+     * it (grid gaps do not collapse) and open a canyon. */
+    margin-block: 0;
+  }
+  .terminator svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .tone-rule { color: var(--color-rule); }
+  .tone-signal { color: var(--color-primary); }
+</style>

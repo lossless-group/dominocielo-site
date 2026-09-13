@@ -1,0 +1,193 @@
+---
+/* ============================================================================
+ * DIRECTION B — "Sheet"
+ *
+ * A one-page document: the thing a serious allocator would actually keep in a
+ * folder. Not a website pretending to be a document — a white sheet lying on
+ * a warm-grey desk, with everything visible at once in a tight ruled grid.
+ *
+ * The whole site is under 320 words and that is the asset, not the problem.
+ * Where Direction A answers thinness with air, this one answers it with
+ * STRUCTURE: five numbered records, short measures, aligned columns, hairline
+ * rules doing all the separating, and the mono/sans split — Plex Mono for
+ * every label, figure, entity, phone number and postal line; Plex Sans for
+ * the prose — that makes it read as filed rather than marketed.
+ *
+ * Every fact on this page comes from src/content/ or src/lib/site.ts. The
+ * filing metadata in the masthead ("Office profile", "Sheet 1 of 1") is
+ * deliberately limited to true statements about the document itself; no
+ * registration number, no AUM, no founding year, no issue date is invented to
+ * make it look more official than it is.
+ * ========================================================================== */
+import { getCollection, render } from 'astro:content';
+import BaseThemeLayout from '../layouts/BaseThemeLayout.astro';
+import SheetMast from '../components/sheet/SheetMast.astro';
+import SheetRecord from '../components/sheet/SheetRecord.astro';
+import AreaLedger from '../components/sheet/AreaLedger.astro';
+import KeyValue from '../components/sheet/KeyValue.astro';
+import SheetFoot from '../components/sheet/SheetFoot.astro';
+import { PRINCIPAL, OFFICE, GIVING, SOCIAL } from '../lib/site';
+
+const areas = (await getCollection('areas')).sort((a, b) => a.data.order - b.data.order);
+const sections = await getCollection('sections');
+
+function section(slugId: string) {
+  const found = sections.find((entry) => entry.data.slug_id === slugId);
+  if (!found) throw new Error(`sheet.astro: missing section "${slugId}"`);
+  return found;
+}
+
+const family = section('family');
+const principal = section('principal');
+const giving = section('giving');
+
+const { Content: FamilyBody } = await render(family);
+const { Content: PrincipalBody } = await render(principal);
+const { Content: GivingBody } = await render(giving);
+
+const givingRows = [
+  { label: 'Fund', value: GIVING.fund },
+  { label: 'Principal', value: GIVING.principal },
+  { label: 'Web', value: GIVING.label, href: GIVING.url },
+  { label: 'Email', value: GIVING.email, href: `mailto:${GIVING.email}` },
+];
+
+const contactRows = [
+  { label: 'Email', value: OFFICE.email, href: `mailto:${OFFICE.email}` },
+  { label: 'Telephone', value: OFFICE.phone, href: OFFICE.phone_href },
+  { label: 'Office', lines: [OFFICE.address_line, OFFICE.address_city] },
+  { label: 'Social', links: SOCIAL },
+];
+---
+
+<BaseThemeLayout
+  title="Dominocielo — Sheet"
+  description="Dominocielo, a single-family office in Austin, Texas. Investment areas, the principal, giving, and how to reach the office."
+  theme="sheet"
+  mode="light"
+>
+  <div class="desk">
+    <div class="grain" aria-hidden="true"></div>
+
+    <main id="main" class="sheet">
+      <SheetMast
+        name={OFFICE.name}
+        kind={OFFICE.kind}
+        city={OFFICE.city}
+        meta={['Office profile', 'Sheet 1 of 1']}
+        portrait={PRINCIPAL.portrait}
+        portraitAlt={PRINCIPAL.portrait_alt}
+      />
+
+      <div class="records">
+        <SheetRecord
+          id="family"
+          num="01"
+          eyebrow={family.data.eyebrow}
+          title={family.data.title}
+          lead={family.data.lead}
+        >
+          <FamilyBody />
+        </SheetRecord>
+
+        <SheetRecord
+          id="principal"
+          num="02"
+          eyebrow={principal.data.eyebrow}
+          title={principal.data.title}
+          lead={principal.data.lead}
+        >
+          <PrincipalBody />
+        </SheetRecord>
+
+        <SheetRecord id="areas" num="03" title="Investment areas" indexHeading>
+          <AreaLedger areas={areas.map((area) => area.data)} />
+        </SheetRecord>
+
+        <SheetRecord
+          id="giving"
+          num="04"
+          eyebrow={giving.data.eyebrow}
+          title={giving.data.title}
+          lead={giving.data.lead}
+        >
+          <GivingBody />
+          <div class="record-kv">
+            <KeyValue rows={givingRows} label={GIVING.fund} />
+          </div>
+        </SheetRecord>
+
+        <SheetRecord id="contact" num="05" title="Contact" indexHeading>
+          <div class="contact-grid">
+            <KeyValue rows={contactRows} label="Contact" />
+          </div>
+        </SheetRecord>
+      </div>
+
+      <SheetFoot href="/" back="Back to directions" stamp="Direction B · Sheet" />
+    </main>
+  </div>
+</BaseThemeLayout>
+
+<style>
+  /* The desk the sheet lies on. */
+  .desk {
+    position: relative;
+    min-height: 100vh;
+    background: var(--color-background);
+    padding: clamp(0rem, 3.5vw, 3rem) clamp(0rem, 3.5vw, 3rem) clamp(2rem, 6vw, 4.5rem);
+  }
+
+  /* Paper tooth. Invisible in light, faintly present in dark and vibrant. */
+  .grain {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: var(--fx-grain-opacity);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.86' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* The sheet itself. One hairline for an edge; no shadow, no radius. */
+  .sheet {
+    position: relative;
+    z-index: 1;
+    max-width: var(--page-measure);
+    margin: 0 auto;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-control);
+    padding: var(--page-gutter);
+  }
+
+  /* The ruled margin line of the records block — the vertical that separates
+   * the numbered index column from the content, like the printed margin on
+   * filing stock. Drops away when the grid collapses to one column. */
+  .records {
+    position: relative;
+    display: block;
+  }
+  .records::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 8.75rem;
+    width: 1px;
+    background: var(--color-grid);
+    pointer-events: none;
+  }
+
+  @media (max-width: 44rem) {
+    .records::before { display: none; }
+  }
+
+  .record-kv { margin-top: 1.25rem; }
+  .contact-grid { max-width: 34rem; }
+
+  @media print {
+    .desk { padding: 0; }
+    .grain { display: none; }
+    .sheet { border: 0; }
+  }
+</style>

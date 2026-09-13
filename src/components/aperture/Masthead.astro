@@ -1,0 +1,62 @@
+---
+/* ============================================================================
+ * Masthead — two data points and a name, set in the emptiest part of the sky.
+ * Nothing else. The restraint is the argument: an office that has to explain
+ * itself in the first screen is an office nobody has heard of.
+ * ========================================================================== */
+export interface Props {
+  kind: string;
+  city: string;
+  name: string;
+}
+const { kind, city, name } = Astro.props;
+---
+
+<section class="masthead">
+  <p class="stamp">
+    <span>{kind}</span>
+    <span class="stamp-rule" aria-hidden="true"></span>
+    <span>{city}</span>
+  </p>
+  <h1 class="wordmark">{name}</h1>
+</section>
+
+<style>
+  .masthead {
+    padding-block: clamp(5rem, 17vh, 11rem) clamp(3rem, 9vh, 6rem);
+  }
+
+  .stamp {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin: 0 0 clamp(1.75rem, 5vh, 3rem);
+    font-family: var(--font-eyebrow);
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+  .stamp-rule {
+    flex: 1 1 auto;
+    height: 1px;
+    min-width: 1.5rem;
+    background: var(--color-rule);
+  }
+
+  .wordmark {
+    margin: 0;
+    /* Trailing tracking on the last glyph is dead space; pull it back so the
+     * optical left and right edges of the word sit on the same measure. */
+    margin-inline-end: -0.12em;
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(2rem, 8.5vw, 6rem);
+    line-height: 0.98;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-text);
+    overflow-wrap: break-word;
+  }
+</style>

@@ -1,0 +1,55 @@
+---
+/* ============================================================================
+ * TopBar — the only chrome. A way back to the direction chooser, and the
+ * mode toggle. Deliberately small and high-contrast-on-nothing: it sits in
+ * the emptiest part of the sky, where there is no glow to fight.
+ * ========================================================================== */
+import ModeToggle from '../ui/ModeToggle.astro';
+---
+
+<header class="topbar">
+  <a class="back" href="/">
+    <svg class="back-mark" viewBox="0 0 16 16" fill="none" stroke="currentColor" aria-hidden="true" focusable="false">
+      <path d="M10 3 L5 8 L10 13" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+    <span>Directions</span>
+  </a>
+  <ModeToggle />
+</header>
+
+<style>
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 1.5rem 0;
+  }
+
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.85rem 0.4rem 0.6rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-control);
+    font-family: var(--font-eyebrow);
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--color-text-muted);
+    transition: color 160ms ease, border-color 160ms ease;
+  }
+  .back:hover,
+  .back:focus-visible {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  .back-mark {
+    width: 0.75rem;
+    height: 0.75rem;
+    flex: 0 0 auto;
+  }
+</style>

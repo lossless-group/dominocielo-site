@@ -1,0 +1,111 @@
+/* ============================================================================
+ * DIRECTION A — "Card" · theme slug `card`
+ *
+ * TIER 2 semantic tokens. kebab-case only. Tier 1 `--color__*` / `--font__*`
+ * live in global.css and may be referenced ONLY from inside this file.
+ *
+ * The premise: a calling card. The entire site is 300 words, and this
+ * direction treats that as the asset rather than the problem — one screen,
+ * almost no scroll, enormous air. The confidence of not explaining yourself.
+ *
+ * ---------------------------------------------------------------------------
+ * THE TOKEN CONTRACT. All three directions define exactly this set. Anything
+ * a component needs that is not here is a missing token, not a licence to
+ * reach for a `__` value or a hex literal.
+ *
+ *   type      --font-display  --font-body  --font-data  --font-eyebrow
+ *   ground    --color-background  --color-surface  --color-surface-raised
+ *   ink       --color-text  --color-text-muted  --color-text-faint
+ *   signal    --color-primary  --color-primary-soft  --color-accent
+ *   lines     --color-border  --color-rule  --color-grid
+ *   shape     --radius-control  --page-measure  --page-gutter
+ *   effects   --fx-grain-opacity  --fx-glow-opacity
+ *
+ * Mode intent
+ *   light   — the card, printed on good stock. Default.
+ *   dark    — the same card, embossed, read at night.
+ *   vibrant — the card under a raking light. DARK-BASED; every ground,
+ *             surface, text and border set explicitly.
+ * ========================================================================== */
+
+[data-theme="card"] {
+  /* Instrument Serif has one weight and a high contrast axis — it cannot be
+   * made to shout, which is exactly the discipline this direction needs. */
+  --font-display:  var(--font__instrument);
+  --font-body:     var(--font__inter);
+  --font-data:     var(--font__plex-mono);
+  --font-eyebrow:  var(--font__plex-mono);
+
+  --radius-control: 0;
+  --page-measure:   66rem;
+  --page-gutter:    clamp(1.5rem, 6vw, 5rem);
+}
+
+/* --------------------------------------------------------------- light --- */
+[data-theme="card"][data-mode="light"] {
+  --color-background:     var(--color__bone);
+  --color-surface:        var(--color__bone-warm);
+  --color-surface-raised: var(--color__shirt);
+
+  --color-text:           var(--color__navy-ink);
+  --color-text-muted:     color-mix(in srgb, var(--color__navy-ink) 62%, var(--color__bone));
+  --color-text-faint:     color-mix(in srgb, var(--color__navy-ink) 38%, var(--color__bone));
+
+  --color-primary:        var(--color__navy-ink);
+  --color-primary-soft:   color-mix(in srgb, var(--color__navy-ink) 12%, transparent);
+  --color-accent:         var(--color__brass);
+
+  --color-border:         color-mix(in srgb, var(--color__navy-ink) 16%, transparent);
+  --color-rule:           color-mix(in srgb, var(--color__navy-ink) 38%, transparent);
+  --color-grid:           color-mix(in srgb, var(--color__navy-ink) 9%, transparent);
+
+  --fx-grain-opacity: 0.03;
+  --fx-glow-opacity:  0;
+}
+
+/* ---------------------------------------------------------------- dark --- */
+[data-theme="card"][data-mode="dark"] {
+  --color-background:     var(--color__navy-deep);
+  --color-surface:        var(--color__navy-ink);
+  --color-surface-raised: var(--color__navy-mid);
+
+  --color-text:           var(--color__bone);
+  --color-text-muted:     color-mix(in srgb, var(--color__grey-pale) 88%, var(--color__navy-deep));
+  --color-text-faint:     color-mix(in srgb, var(--color__grey-pale) 54%, var(--color__navy-deep));
+
+  /* Navy cannot be the primary on a navy ground; bone takes the role and
+   * brass lifts so it still reads as the same accent idea. */
+  --color-primary:        var(--color__bone);
+  --color-primary-soft:   color-mix(in srgb, var(--color__bone) 16%, transparent);
+  --color-accent:         var(--color__brass-lit);
+
+  --color-border:         color-mix(in srgb, var(--color__grey-pale) 22%, transparent);
+  --color-rule:           color-mix(in srgb, var(--color__grey-pale) 42%, transparent);
+  --color-grid:           color-mix(in srgb, var(--color__grey-pale) 12%, transparent);
+
+  --fx-grain-opacity: 0.05;
+  --fx-glow-opacity:  0.14;
+}
+
+/* ------------------------------------------------------------- vibrant --- */
+/* DARK-BASED. Nothing inherits from light. */
+[data-theme="card"][data-mode="vibrant"] {
+  --color-background:     var(--color__black);
+  --color-surface:        color-mix(in srgb, var(--color__navy-mid) 34%, var(--color__black));
+  --color-surface-raised: color-mix(in srgb, var(--color__navy-mid) 56%, var(--color__black));
+
+  --color-text:           var(--color__white);
+  --color-text-muted:     color-mix(in srgb, var(--color__neon-amber) 52%, var(--color__grey-pale));
+  --color-text-faint:     color-mix(in srgb, var(--color__neon-amber) 38%, transparent);
+
+  --color-primary:        var(--color__neon-amber);
+  --color-primary-soft:   color-mix(in srgb, var(--color__neon-amber) 24%, transparent);
+  --color-accent:         var(--color__neon-cyan);
+
+  --color-border:         color-mix(in srgb, var(--color__neon-amber) 32%, transparent);
+  --color-rule:           color-mix(in srgb, var(--color__neon-amber) 58%, transparent);
+  --color-grid:           color-mix(in srgb, var(--color__neon-amber) 15%, transparent);
+
+  --fx-grain-opacity: 0.06;
+  --fx-glow-opacity:  0.5;
+}

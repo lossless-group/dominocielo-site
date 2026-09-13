@@ -1,0 +1,80 @@
+---
+/* ============================================================================
+ * Passage — a titled block of prose. Family, principal and giving all use it.
+ *
+ * Paragraphs arrive as a plain string[] rather than through a slot, so this
+ * component can own their type scale without reaching across scope boundaries
+ * with :global(). Prose is set in --color-text, never in --color-text-muted:
+ * the upper half of this page sits over the terminator glow, and muted ink is
+ * the first thing that stops clearing 4.5:1 there. Leads are muted, but they
+ * are large-text sizes, so their threshold is 3:1.
+ * ========================================================================== */
+export interface Props {
+  id: string;
+  eyebrow?: string;
+  title: string;
+  lead?: string;
+  paragraphs?: string[];
+  /** Sets the title at display scale. Used once, for the giving section. */
+  scale?: 'normal' | 'large';
+}
+const { id, eyebrow, title, lead, paragraphs = [], scale = 'normal' } = Astro.props;
+---
+
+<section class={`passage scale-${scale}`} id={id} aria-labelledby={`${id}-title`}>
+  {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+  <h2 class="title" id={`${id}-title`}>{title}</h2>
+  {lead && <p class="lead">{lead}</p>}
+  {paragraphs.map((p) => <p class="prose">{p}</p>)}
+  <slot />
+</section>
+
+<style>
+  .passage {
+    max-width: 46rem;
+  }
+
+  .eyebrow {
+    margin: 0 0 1.1rem;
+    font-family: var(--font-eyebrow);
+    font-size: 0.6875rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(1.65rem, 3.6vw, 2.6rem);
+    line-height: 1.16;
+    letter-spacing: 0.005em;
+    text-wrap: balance;
+    color: var(--color-text);
+  }
+  .scale-large .title {
+    font-size: clamp(1.85rem, 4.4vw, 3.1rem);
+  }
+
+  .lead {
+    margin: 1.1rem 0 0;
+    max-width: 34ch;
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-style: italic;
+    font-size: clamp(1.05rem, 1.9vw, 1.3rem);
+    line-height: 1.5;
+    color: var(--color-text-muted);
+  }
+
+  .prose {
+    margin: 1.5rem 0 0;
+    max-width: 60ch;
+    font-family: var(--font-body);
+    font-weight: 300;
+    font-size: clamp(0.95rem, 1.15vw, 1.0625rem);
+    line-height: 1.72;
+    color: var(--color-text);
+  }
+</style>

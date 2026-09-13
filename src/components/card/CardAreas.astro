@@ -1,0 +1,164 @@
+---
+/* ============================================================================
+ * CardAreas — where the money goes. Four lines, not four cards.
+ *
+ * No borders, no icons, no tiles. Each area is one row: a mono name, the
+ * client's own single sentence, and one marker — the registered entity where
+ * one exists, otherwise the figure. Exactly two of each, which is why the
+ * marker column never looks half-empty.
+ *
+ * One row is different. The startups line ("...primarily vibes.") is the only
+ * sentence on the whole site that sounds like a person said it, so it is set
+ * in the display face at four times the size of its neighbours, in brass, and
+ * given the full measure and double the vertical room. That is SPEND 2 of 2.
+ * It is not a pull-quote lifted out of the list; it is the list, breathing.
+ *
+ * Tokens read: --font-eyebrow, --font-display, --font-body, --font-data,
+ *   --color-text, --color-text-muted, --color-text-faint, --color-accent.
+ * ========================================================================== */
+export interface AreaItem {
+  name: string;
+  line: string;
+  entity?: string;
+  figure?: string;
+  figure_label?: string;
+  /** The one row that gets scale and colour. */
+  voice?: boolean;
+}
+
+export interface Props {
+  items: AreaItem[];
+  /** Mono label. Becomes the section's h2. */
+  eyebrow?: string;
+}
+
+const { items, eyebrow = 'Investment' } = Astro.props;
+---
+
+<section class="areas" aria-labelledby="areas-label">
+  <h2 class="areas-label" id="areas-label">{eyebrow}</h2>
+  <ol class="areas-list">
+    {items.map((item) => (
+      <li class:list={['area', item.voice && 'area--voice']}>
+        <h3 class="area-name">{item.name}</h3>
+        <p class="area-line">{item.line}</p>
+        <p class="area-mark tabular">
+          {item.entity ? (
+            <span class="area-entity">{item.entity}</span>
+          ) : (
+            <>
+              <span class="area-figure">{item.figure}</span>
+              {item.figure_label && <span class="area-figure-label">{item.figure_label}</span>}
+            </>
+          )}
+        </p>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .areas {
+    display: block;
+  }
+
+  .areas-label {
+    margin: 0;
+    font-family: var(--font-eyebrow);
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .areas-list {
+    list-style: none;
+    margin: clamp(1rem, 2.5vw, 1.75rem) 0 0;
+    padding: 0;
+  }
+
+  .area {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.4rem;
+    padding-block: clamp(0.85rem, 2vw, 1.1rem);
+  }
+
+  .area-name {
+    margin: 0;
+    font-family: var(--font-eyebrow);
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .area-line {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--color-text);
+    max-width: 46ch;
+  }
+
+  .area-mark {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+  }
+
+  .area-figure-label {
+    font-size: 0.6875rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+  }
+
+  /* --- the one line that sounds like a person ---------------------------- */
+  .area--voice {
+    padding-block: clamp(1.5rem, 4vw, 2.75rem);
+  }
+
+  .area--voice .area-line {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.5rem, 3.6vw, 2.625rem);
+    line-height: 1.18;
+    letter-spacing: -0.012em;
+    /* SPEND 2 of 2. */
+    color: var(--color-accent);
+    max-width: 26ch;
+  }
+
+  @media (min-width: 56rem) {
+    .area {
+      grid-template-columns: 11rem minmax(0, 1fr) 13rem;
+      align-items: baseline;
+      gap: 2rem;
+    }
+
+    /* The voice line takes the measure back off the marker column, and its
+     * entity drops beneath it rather than sitting alongside. */
+    .area--voice .area-line,
+    .area--voice .area-mark {
+      grid-column: 2 / -1;
+    }
+
+    .area--voice .area-mark {
+      margin-top: 1rem;
+    }
+
+    .area--voice .area-line {
+      max-width: 30ch;
+    }
+  }
+</style>

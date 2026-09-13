@@ -1,0 +1,160 @@
+---
+/* ============================================================================
+ * SheetMast — the masthead of the document.
+ *
+ * A filed page tells you four things before it tells you anything else: who
+ * it is about, what kind of thing they are, where they are, and what the
+ * document itself is. Those four sit in a ruled block at the top, with the
+ * identity in the prose face and every piece of filing metadata in the data
+ * face, right-aligned against the sheet's own edge.
+ *
+ * The photograph is deliberately small and affixed at the identity, the way
+ * an ID photo is attached to a form — never a hero. It is desaturated so it
+ * reads as printed rather than uploaded.
+ *
+ * Semantic tokens only.
+ * ========================================================================== */
+import ModeToggle from '../ui/ModeToggle.astro';
+
+export interface Props {
+  /** Office name — the document's subject, and the page's single h1. */
+  name: string;
+  /** What kind of entity this is. */
+  kind: string;
+  /** Where it is. */
+  city: string;
+  /** Filing metadata. Strictly true statements about THIS document. */
+  meta: readonly string[];
+  portrait?: string;
+  portraitAlt?: string;
+}
+
+const { name, kind, city, meta, portrait, portraitAlt = '' } = Astro.props;
+---
+
+<header class="mast">
+  <div class="mast-chrome">
+    <span class="mast-stamp">{kind}</span>
+    <ModeToggle />
+  </div>
+
+  <div class="mast-body">
+    {portrait && (
+      <img class="mast-photo" src={portrait} alt={portraitAlt} width="84" height="84" decoding="async" />
+    )}
+
+    <div class="mast-id">
+      <h1 class="mast-name">{name}</h1>
+      <p class="mast-where">{city}</p>
+    </div>
+
+    <ul class="mast-meta">
+      {meta.map((line) => <li class="mast-meta-line">{line}</li>)}
+    </ul>
+  </div>
+</header>
+
+<style>
+  .mast {
+    border-bottom: 2px solid var(--color-text);
+    padding-bottom: 1.15rem;
+  }
+
+  /* --- top strip: entity kind on the left, the mode control on the right - */
+  .mast-chrome {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+  }
+  .mast-stamp {
+    font-family: var(--font-eyebrow);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-control);
+    padding: 0.3rem 0.55rem;
+    white-space: nowrap;
+  }
+
+  /* --- identity block ---------------------------------------------------- */
+  .mast-body {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: end;
+    column-gap: 1.25rem;
+    row-gap: 1.25rem;
+  }
+
+  .mast-photo {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    object-fit: cover;
+    /* Printed, not uploaded. */
+    filter: grayscale(1) contrast(1.06);
+  }
+  :global(html[data-mode='dark']) .mast-photo,
+  :global(html[data-mode='vibrant']) .mast-photo {
+    filter: grayscale(1) contrast(1.02) brightness(1.18);
+  }
+
+  .mast-id { min-width: 0; }
+
+  .mast-name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(2rem, 6.4vw, 3.25rem);
+    line-height: 1.02;
+    letter-spacing: -0.028em;
+    margin: 0;
+    color: var(--color-text);
+  }
+  .mast-where {
+    font-family: var(--font-data);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin: 0.5rem 0 0;
+  }
+
+  /* --- filing metadata: right-aligned against the sheet edge -------------- */
+  .mast-meta {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: right;
+    display: grid;
+    gap: 0.2rem;
+  }
+  .mast-meta-line {
+    margin: 0;
+    font-family: var(--font-data);
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 44rem) {
+    .mast-body {
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      row-gap: 1rem;
+    }
+    .mast-meta {
+      grid-column: 1 / -1;
+      text-align: left;
+      border-top: 1px solid var(--color-border);
+      padding-top: 0.75rem;
+    }
+  }
+</style>

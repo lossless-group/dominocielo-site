@@ -1,0 +1,87 @@
+---
+/* ============================================================================
+ * MarginNote — the one sentence on this page that sounds like a person.
+ *
+ *   "Our early-stage investments are part diligence, part pattern
+ *    recognition, and primarily vibes."
+ *
+ * Verbatim, always. The risk in Direction B is that a rigid ruled grid
+ * flattens it into just another cell, so this component deliberately breaks
+ * the grid three ways and in no other:
+ *
+ *   1. It steps LEFT out of its column, into the gutter the ledger reserves
+ *      between the term and the definition — the physical margin of the page.
+ *   2. It is rotated a third of a degree. Not enough to notice, enough to
+ *      stop reading as machine-set.
+ *   3. A drawn swash sits under it — one hand-wobbled stroke, stretched to
+ *      the measure — where the rest of the document only ever gets a hairline.
+ *
+ * It is also the only body copy on the sheet set above 0.9375rem and in full
+ * ink rather than muted. Everything else is dry so that this can land.
+ *
+ * The step-out is a custom property so the narrow layout can zero it — at
+ * one column there is no margin to write in, and a negative offset there
+ * would bleed. Nothing here animates, so reduced-motion has nothing to undo.
+ * ========================================================================== */
+export interface Props {
+  text: string;
+}
+
+const { text } = Astro.props;
+---
+
+<p class="note">
+  <span class="note-text">{text}</span>
+  <svg
+    class="note-swash"
+    viewBox="0 0 320 12"
+    preserveAspectRatio="none"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path
+      d="M3 7.6 C 52 3.1, 104 9.4, 158 5.2 S 262 2.4, 317 7.1"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.7"
+      stroke-linecap="round"
+      vector-effect="non-scaling-stroke"
+    />
+  </svg>
+</p>
+
+<style>
+  .note {
+    --note-step: -1.4rem;
+    position: relative;
+    margin: 0;
+    margin-left: var(--note-step);
+    padding: 0.15rem 0 0.9rem;
+    max-width: 40ch;
+    transform: rotate(-0.32deg);
+    transform-origin: 0 50%;
+  }
+
+  .note-text {
+    font-family: var(--font-body);
+    font-size: clamp(1.0625rem, 1.9vw, 1.25rem);
+    font-weight: 400;
+    line-height: 1.52;
+    letter-spacing: -0.008em;
+    color: var(--color-text);
+    text-wrap: pretty;
+  }
+
+  .note-swash {
+    display: block;
+    width: 100%;
+    height: 0.6rem;
+    margin-top: 0.35rem;
+    color: var(--color-rule);
+    overflow: visible;
+  }
+
+  @media (max-width: 62rem) {
+    .note { --note-step: 0rem; }
+  }
+</style>

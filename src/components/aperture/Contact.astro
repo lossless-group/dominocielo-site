@@ -1,0 +1,119 @@
+---
+/* ============================================================================
+ * Contact — the thing the reader actually came for.
+ *
+ * The failure mode for a page like this is "looks like a placeholder", and the
+ * cure is a reachable human, not more copy. So the email is the largest piece
+ * of type on the page after the wordmark, set in the display face and in
+ * --color-primary — the warm signal, whose whole job on this site is to mark
+ * the things a person can touch. Phone, postal address and the three profiles
+ * sit under it in the data face, at label scale.
+ * ========================================================================== */
+export interface Props {
+  email: string;
+  phone: string;
+  phoneHref: string;
+  addressLine: string;
+  addressCity: string;
+  social: ReadonlyArray<{ label: string; href: string }>;
+}
+const { email, phone, phoneHref, addressLine, addressCity, social } = Astro.props;
+---
+
+<section class="contact" id="contact" aria-labelledby="contact-title">
+  <h2 class="eyebrow" id="contact-title">Contact</h2>
+
+  <a class="email" href={`mailto:${email}`}>{email}</a>
+
+  <div class="meta">
+    <div class="meta-item">
+      <a class="link" href={phoneHref}>{phone}</a>
+    </div>
+    <div class="meta-item">
+      <address class="address">
+        {addressLine}<br />{addressCity}
+      </address>
+    </div>
+    <ul class="social">
+      {social.map((s) => (
+        <li>
+          <a class="link" href={s.href} rel="me noopener" target="_blank">{s.label}</a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .contact { max-width: 46rem; }
+
+  .eyebrow {
+    margin: 0 0 1.25rem;
+    font-family: var(--font-eyebrow);
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .email {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(1.25rem, 4.2vw, 2.5rem);
+    line-height: 1.2;
+    letter-spacing: 0.005em;
+    color: var(--color-primary);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-primary-soft);
+    padding-bottom: 0.12em;
+    overflow-wrap: anywhere;
+    transition: border-color 160ms ease;
+  }
+  .email:hover,
+  .email:focus-visible { border-bottom-color: var(--color-primary); }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem 3rem;
+    margin-top: 2.25rem;
+  }
+
+  .meta-item { min-width: 0; }
+
+  .address {
+    font-family: var(--font-data);
+    font-style: normal;
+    font-size: 0.75rem;
+    line-height: 1.75;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+  }
+
+  .social {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .link {
+    font-family: var(--font-data);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 0.15em;
+    transition: color 160ms ease, border-color 160ms ease;
+  }
+  .link:hover,
+  .link:focus-visible {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+  }
+</style>

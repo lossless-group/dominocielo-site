@@ -1,0 +1,124 @@
+---
+/* ============================================================================
+ * Sky — the ground the whole direction sits on.
+ *
+ * NOT a background image and not a fixed overlay. It is an absolutely
+ * positioned band at the TOP of the document, roughly one and a half
+ * viewports tall, whose lowest gradient stop is --sky-ground (which every
+ * mode sets equal in value to --color-background). So the atmosphere is a
+ * real event near the first fold, and everything below the horizon is flat
+ * ground with nothing behind it. That is deliberate: long prose never has to
+ * compete with a gradient for contrast.
+ *
+ * Four layers, all CSS except the grain:
+ *   1  .sky-band       vertical gradient — zenith → high → horizon → ground
+ *   2  .sky-terminator wide shallow ellipse sitting on the horizon line
+ *   3  .sky-drift      one very slow breathing glow (the only motion here)
+ *   4  .sky-grain      inline SVG fractal noise, desaturated, at --fx-grain
+ *
+ * Degradation:
+ *   prefers-reduced-motion  drift stops dead at a composed static offset;
+ *                           nothing else moves, so the page is identical.
+ *   no SVG filter support   the grain rect falls back to a flat currentColor
+ *                           wash at --fx-grain-opacity — invisible, not wrong.
+ *   forced-colors / print   every layer is dropped; the page is ink on ground.
+ *
+ * Reads Tier 2 tokens only.
+ * ========================================================================== */
+---
+
+<div class="sky" aria-hidden="true">
+  <div class="sky-band"></div>
+  <div class="sky-terminator"></div>
+  <div class="sky-drift"></div>
+  <svg class="sky-grain" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" focusable="false">
+    <filter id="aperture-grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.82" numOctaves="3" stitchTiles="stitch" />
+      <feColorMatrix type="saturate" values="0" />
+    </filter>
+    <rect width="100%" height="100%" fill="currentColor" filter="url(#aperture-grain)" />
+  </svg>
+</div>
+
+<style>
+  .sky {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    height: clamp(40rem, 148vh, 92rem);
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .sky-band {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      var(--sky-zenith) 0%,
+      var(--sky-high) 34%,
+      var(--sky-horizon) var(--sky-terminator-y),
+      var(--sky-ground) calc(var(--sky-terminator-y) + 17%),
+      var(--sky-ground) 100%
+    );
+  }
+
+  /* The terminator. Wide and shallow so its peak is diffuse — a bright, tight
+   * glow would put prose on a 3:1 ground. The 0.42 factor is the ceiling that
+   * keeps --color-text above 8:1 at the brightest pixel in every mode. */
+  .sky-terminator {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: var(--sky-terminator-y);
+    width: 190%;
+    height: 40vh;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(ellipse at center, var(--sky-terminator) 0%, transparent 66%);
+    opacity: calc(var(--fx-glow-opacity) * 0.42);
+    mix-blend-mode: var(--sky-glow-blend);
+  }
+
+  /* The one atmospheric motion on the page: a 96s breathe, alternating, with
+   * no opacity change so it can never flash. Composited transform only. */
+  .sky-drift {
+    position: absolute;
+    inset-inline-start: 6%;
+    inset-block-start: calc(var(--sky-terminator-y) - 38%);
+    width: clamp(18rem, 58vw, 50rem);
+    aspect-ratio: 1;
+    background: radial-gradient(circle at center, var(--sky-drift) 0%, transparent 64%);
+    opacity: calc(var(--fx-glow-opacity) * 0.26);
+    mix-blend-mode: var(--sky-drift-blend);
+    will-change: transform;
+    animation: aperture-drift 96s ease-in-out infinite alternate;
+  }
+
+  @keyframes aperture-drift {
+    from { transform: translate3d(-5%, 3%, 0) scale(1); }
+    to   { transform: translate3d(16%, -5%, 0) scale(1.16); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sky-drift {
+      animation: none;
+      /* The composed midpoint, so the still frame is the one that was drawn. */
+      transform: translate3d(5%, -1%, 0) scale(1.08);
+    }
+  }
+
+  .sky-grain {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    color: var(--color-text-faint);
+    opacity: var(--fx-grain-opacity);
+    mix-blend-mode: overlay;
+  }
+
+  @media (forced-colors: active), print {
+    .sky { display: none; }
+  }
+</style>

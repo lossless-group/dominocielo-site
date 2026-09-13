@@ -1,0 +1,253 @@
+---
+/* ============================================================================
+ * DIRECTION C — "Aperture"
+ *
+ * The whole site is ~300 words. This direction spends its budget on air
+ * rather than on sentences: a ground instead of a background, a name written
+ * across empty sky, one photograph treated with care, four areas, an email.
+ *
+ * Everything on this page comes from src/content/ or src/lib/site.ts. Nothing
+ * is written here. The one sentence that carries any personality — the
+ * Startups line — is passed through verbatim and given a row to itself.
+ * ========================================================================== */
+import { getCollection } from 'astro:content';
+import BaseThemeLayout from '../layouts/BaseThemeLayout.astro';
+import Sky from '../components/aperture/Sky.astro';
+import TopBar from '../components/aperture/TopBar.astro';
+import Masthead from '../components/aperture/Masthead.astro';
+import Terminator from '../components/aperture/Terminator.astro';
+import Passage from '../components/aperture/Passage.astro';
+import Portrait from '../components/aperture/Portrait.astro';
+import AreaRow from '../components/aperture/AreaRow.astro';
+import Contact from '../components/aperture/Contact.astro';
+import { PRINCIPAL, OFFICE, GIVING, SOCIAL } from '../lib/site';
+
+const areas = (await getCollection('areas')).sort((a, b) => a.data.order - b.data.order);
+const sections = await getCollection('sections');
+const section = (id: string) => sections.find((s) => s.data.slug_id === id)!;
+
+/* The section bodies are a handful of plain paragraphs. Splitting on blank
+ * lines is the entire markdown feature set this direction needs, so no
+ * renderer is pulled in for it. */
+const paragraphs = (body: string | undefined): string[] =>
+  (body ?? '')
+    .trim()
+    .split(/\n{2,}/)
+    .map((p) => p.replace(/\s+/g, ' ').trim())
+    .filter(Boolean);
+
+const family = section('family');
+const principal = section('principal');
+const giving = section('giving');
+
+const title = `${OFFICE.name} — ${OFFICE.kind}, ${OFFICE.city}`;
+const description = `${OFFICE.name}. ${OFFICE.kind} in ${OFFICE.city}.`;
+---
+
+<BaseThemeLayout title={title} description={description} theme="aperture" mode="dark">
+  <div class="shell">
+    <Sky />
+
+    <div class="frame">
+      <TopBar />
+
+      <main id="main">
+        <Masthead kind={OFFICE.kind} city={OFFICE.city} name={OFFICE.name} />
+
+        <Terminator />
+
+        <Passage
+          id="family"
+          eyebrow={family.data.eyebrow}
+          title={family.data.title}
+          lead={family.data.lead}
+          paragraphs={paragraphs(family.body)}
+        />
+
+        <section class="principal" aria-labelledby="principal-title">
+          <Portrait src={PRINCIPAL.portrait} alt={PRINCIPAL.portrait_alt} />
+          <Passage
+            id="principal"
+            eyebrow={principal.data.eyebrow}
+            title={principal.data.title}
+            lead={principal.data.lead}
+            paragraphs={paragraphs(principal.body)}
+          />
+        </section>
+
+        <Terminator />
+
+        <section class="areas" aria-labelledby="areas-title">
+          <h2 class="areas-title" id="areas-title">Investment areas</h2>
+          <ul class="areas-list">
+            {areas.map((area) => (
+              <AreaRow
+                name={area.data.name}
+                line={area.data.line}
+                entity={area.data.entity}
+                figure={area.data.figure}
+                figureLabel={area.data.figure_label}
+                feature={area.data.feature ?? area.id.includes('startups')}
+              />
+            ))}
+          </ul>
+        </section>
+
+        <Passage
+          id="giving"
+          eyebrow={giving.data.eyebrow}
+          title={giving.data.title}
+          lead={giving.data.lead}
+          paragraphs={paragraphs(giving.body)}
+          scale="large"
+        >
+          <dl class="fund">
+            <div class="fund-row">
+              <dt>Fund</dt>
+              <dd>{GIVING.fund}</dd>
+            </div>
+            <div class="fund-row">
+              <dt>Principal</dt>
+              <dd>{GIVING.principal}</dd>
+            </div>
+            <div class="fund-row">
+              <dt>Site</dt>
+              <dd>
+                <a class="fund-link" href={GIVING.url} rel="noopener" target="_blank">{GIVING.label}</a>
+              </dd>
+            </div>
+          </dl>
+        </Passage>
+
+        <Terminator tone="signal" />
+
+        <Contact
+          email={OFFICE.email}
+          phone={OFFICE.phone}
+          phoneHref={OFFICE.phone_href}
+          addressLine={OFFICE.address_line}
+          addressCity={OFFICE.address_city}
+          social={SOCIAL}
+        />
+      </main>
+
+      <footer class="foot">
+        <span class="foot-mark">{OFFICE.name}</span>
+      </footer>
+    </div>
+  </div>
+</BaseThemeLayout>
+
+<style>
+  /* The sky is positioned against this, not against the viewport, so the
+   * horizon is a fixed point in the DOCUMENT rather than a layer that follows
+   * the reader down the page. */
+  .shell {
+    position: relative;
+    min-height: 100vh;
+    overflow-x: clip;
+  }
+
+  .frame {
+    position: relative;
+    z-index: 1;
+    max-width: var(--page-measure);
+    margin-inline: auto;
+    padding-inline: var(--page-gutter);
+    padding-block-end: clamp(3rem, 10vh, 7rem);
+  }
+
+  /* Section rhythm is a grid gap rather than sibling margins: the children of
+   * <main> are component roots, which carry their OWN scope id and not this
+   * page's, so a `main > * + *` rule would compile to a selector that matches
+   * nothing. `minmax(0, 1fr)` keeps a long unbroken string from widening the
+   * track — nothing on this page is allowed to bleed horizontally. */
+  main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(3.5rem, 11vh, 8rem);
+  }
+
+  /* --- principal ---------------------------------------------------------- */
+  /* Grid for the same reason: the portrait and the passage are both component
+   * roots, so the layout has to work without selecting them. */
+  .principal {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(1.75rem, 5vw, 3rem);
+  }
+  @media (min-width: 48rem) {
+    .principal {
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: start;
+    }
+  }
+
+  /* --- areas -------------------------------------------------------------- */
+  .areas-title {
+    margin: 0 0 1.5rem;
+    font-family: var(--font-eyebrow);
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  /* Every row reserves a 2px rule + 1.25rem of padding on its inline start so
+   * the featured row's dawn edge does not shift its neighbours. Pulling the
+   * list back by that amount puts the row TEXT back on the page measure and
+   * hangs the rule in the gutter, where it belongs. Smaller than the minimum
+   * gutter, so it cannot bleed. */
+  .areas-list {
+    list-style: none;
+    margin: 0 0 0 -1.35rem;
+    padding: 0;
+  }
+
+  /* --- giving: the fund's own particulars --------------------------------- */
+  .fund {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem 3rem;
+    margin: 2.25rem 0 0;
+  }
+  .fund-row { min-width: 0; }
+  .fund dt {
+    font-family: var(--font-eyebrow);
+    font-size: 0.625rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+  }
+  .fund dd {
+    margin: 0.4rem 0 0;
+    font-family: var(--font-data);
+    font-size: 0.8125rem;
+    letter-spacing: 0.03em;
+    color: var(--color-text-muted);
+  }
+  .fund-link {
+    color: var(--color-primary);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-primary-soft);
+    padding-bottom: 0.1em;
+    transition: border-color 160ms ease;
+  }
+  .fund-link:hover,
+  .fund-link:focus-visible { border-bottom-color: var(--color-primary); }
+
+  /* --- foot --------------------------------------------------------------- */
+  .foot {
+    margin-block-start: clamp(4rem, 12vh, 8rem);
+    padding-block-start: 1.5rem;
+    border-top: 1px solid var(--color-grid);
+  }
+  .foot-mark {
+    font-family: var(--font-eyebrow);
+    font-size: 0.625rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+  }
+</style>

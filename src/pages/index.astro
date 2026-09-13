@@ -1,0 +1,175 @@
+---
+/* The chooser. Three designs of a 300-word site, so the comparison is about
+ * how little you can say and still be convincing. */
+import { getCollection } from 'astro:content';
+import BaseThemeLayout from '../layouts/BaseThemeLayout.astro';
+import ModeToggle from '../components/ui/ModeToggle.astro';
+import { WORD_BUDGET } from '../lib/site';
+
+const areas = await getCollection('areas');
+const sections = await getCollection('sections');
+
+const directions = [
+  {
+    slug: 'card',
+    name: 'Card',
+    stance: 'Air is the design',
+    blurb:
+      'A calling card. One screen, almost no scroll, enormous unfilled space and a single brass rule. Bone and ink. The confidence of not explaining yourself.',
+  },
+  {
+    slug: 'sheet',
+    name: 'Sheet',
+    stance: 'Structure is the design',
+    blurb:
+      'A one-page document — the thing an allocator would keep in a folder. Everything visible at once, mono labels, hairline rules, the two real figures set at size.',
+  },
+  {
+    slug: 'aperture',
+    name: 'Aperture',
+    stance: 'Atmosphere is the design',
+    blurb:
+      'Dark, quiet, a slow horizon and very few words. The visual logic borrows from instruments that see through cloud and dark — stated in the design, never in the copy.',
+  },
+];
+---
+
+<BaseThemeLayout
+  title="Dominocielo — three design directions"
+  description="Three designs of the same one-page site, each holding to the original word count."
+  theme="card"
+  mode="light"
+>
+  <header class="chrome">
+    <span class="mark">Three directions</span>
+    <ModeToggle />
+  </header>
+
+  <main class="wrap" id="main">
+    <h1>Three hundred words is the whole site.</h1>
+    <p class="lede">
+      That is not a gap to fill. It is the thing worth protecting. All three
+      directions carry every fact from the current page and not one word more &mdash;
+      what changes is whether brevity reads as confidence or as an unfinished page.
+    </p>
+
+    <ul class="stats">
+      <li><span class="v tabular">{WORD_BUDGET}</span><span class="l">word ceiling, enforced</span></li>
+      <li><span class="v tabular">{areas.length}</span><span class="l">investment areas</span></li>
+      <li><span class="v tabular">{sections.length}</span><span class="l">sections</span></li>
+      <li><span class="v tabular">3</span><span class="l">modes per direction</span></li>
+    </ul>
+
+    <ul class="grid">
+      {directions.map((d) => (
+        <li>
+          <a href={`/${d.slug}`}>
+            <span class="stance">{d.stance}</span>
+            <h2>{d.name}</h2>
+            <p>{d.blurb}</p>
+            <span class="go">Open &rarr;</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <section class="notes">
+      <h2 class="nh">Two things the current site is doing to itself</h2>
+      <dl>
+        <div>
+          <dt>It loads about forty font families.</dt>
+          <dd>
+            A page-builder theme shipping its entire type menu to every visitor,
+            in one request, for a page with nine headings. None of these three
+            uses more than three faces.
+          </dd>
+        </div>
+        <div>
+          <dt>It has no colours of its own.</dt>
+          <dd>
+            Every colour on the live page is the stock editor swatch set &mdash;
+            defaults nobody picked. So each direction proposes a palette instead,
+            drawn from the one considered image on the site: the headshot.
+          </dd>
+        </div>
+      </dl>
+    </section>
+
+    <nav class="refs">
+      <a href="/brand-kit">Brand kit</a>
+      <a href="/design-system">Design system</a>
+    </nav>
+  </main>
+</BaseThemeLayout>
+
+<style>
+  .chrome {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.4rem var(--page-gutter);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .mark {
+    font-family: var(--font-eyebrow);
+    font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+  .wrap {
+    max-width: var(--page-measure); margin: 0 auto;
+    padding: clamp(3rem, 9vw, 7rem) var(--page-gutter) 5rem;
+  }
+  h1 {
+    margin: 0; max-width: 17ch;
+    font-family: var(--font-display); font-weight: 400;
+    font-size: clamp(2.4rem, 7vw, 4.5rem); line-height: 1.02; letter-spacing: -0.015em;
+  }
+  .lede {
+    margin: 1.75rem 0 0; max-width: 58ch;
+    font-size: clamp(1.0625rem, 1.6vw, 1.1875rem); line-height: 1.65;
+    color: var(--color-text-muted);
+  }
+  .stats {
+    list-style: none; margin: 3rem 0 0; padding: 1.25rem 0 0;
+    border-top: 1px solid var(--color-rule);
+    display: flex; flex-wrap: wrap; gap: 2.5rem;
+  }
+  .stats li { display: flex; align-items: baseline; gap: 0.5rem; }
+  .v { font-size: 1.375rem; }
+  .l { font-size: 0.8125rem; color: var(--color-text-muted); }
+
+  .grid {
+    list-style: none; margin: 3.5rem 0 0; padding: 0;
+    display: grid; gap: 2.25rem; grid-template-columns: 1fr;
+  }
+  @media (min-width: 50rem) { .grid { grid-template-columns: repeat(3, 1fr); } }
+  .grid a {
+    display: flex; flex-direction: column; gap: 0.55rem;
+    text-decoration: none; color: inherit;
+    padding-top: 1rem; border-top: 2px solid var(--color-border);
+    transition: border-color 180ms ease;
+  }
+  .grid a:hover { border-top-color: var(--color-accent); }
+  .stance {
+    font-family: var(--font-eyebrow); font-size: 0.625rem;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-accent);
+  }
+  .grid h2 {
+    margin: 0; font-family: var(--font-display); font-weight: 400;
+    font-size: 1.75rem; line-height: 1.1;
+  }
+  .grid p { margin: 0; font-size: 0.9375rem; line-height: 1.6; color: var(--color-text-muted); }
+  .go { margin-top: 0.3rem; font-size: 0.875rem; color: var(--color-text-faint); }
+
+  .notes { margin-top: 4.5rem; padding-top: 2rem; border-top: 1px solid var(--color-rule); }
+  .nh { margin: 0 0 1.5rem; font-family: var(--font-display); font-weight: 400; font-size: 1.5rem; }
+  .notes dl { margin: 0; display: grid; gap: 1.75rem; grid-template-columns: 1fr; }
+  @media (min-width: 50rem) { .notes dl { grid-template-columns: repeat(2, 1fr); } }
+  .notes dt { font-size: 1rem; margin-bottom: 0.4rem; }
+  .notes dd { margin: 0; font-size: 0.9375rem; line-height: 1.65; color: var(--color-text-muted); }
+
+  .refs {
+    margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border);
+    display: flex; gap: 1.75rem; font-size: 0.875rem;
+  }
+  .refs a { color: var(--color-text-muted); text-decoration: none; }
+  .refs a:hover { color: var(--color-accent); }
+</style>

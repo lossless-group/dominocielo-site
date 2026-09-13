@@ -1,0 +1,138 @@
+---
+/* ============================================================================
+ * AreaRow — one investment area. Four of these, stacked.
+ *
+ * This is the part of the page a reader has to be able to scan in seconds, so
+ * it is the least atmospheric thing here: a fixed left rail carrying the
+ * figure in the instrument colour, a name, one sentence, and the legal entity
+ * where one exists. Hairline between rows, nothing else.
+ *
+ * `feature` is used exactly once, on Startups, whose line is the only sentence
+ * on this site with a human voice in it. It gets: full-strength ink instead of
+ * muted, the display face instead of the body face, a dawn rule down its left
+ * edge, a soft dawn wash behind it, and twice the vertical air. The mood is
+ * not allowed to swallow that line — so in this one row the mood steps back
+ * and the person speaks.
+ * ========================================================================== */
+export interface Props {
+  name: string;
+  line: string;
+  entity?: string;
+  figure?: string;
+  figureLabel?: string;
+  feature?: boolean;
+}
+const { name, line, entity, figure, figureLabel, feature = false } = Astro.props;
+---
+
+<li class={feature ? 'area is-feature' : 'area'}>
+  <div class="rail">
+    {figure && <span class="figure">{figure}</span>}
+    {figureLabel && <span class="figure-label">{figureLabel}</span>}
+  </div>
+  <div class="body">
+    <h3 class="name">{name}</h3>
+    <p class="line">{line}</p>
+    {entity && <p class="entity">{entity}</p>}
+  </div>
+</li>
+
+<style>
+  .area {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem 2rem;
+    padding-block: 1.6rem;
+    /* Every row reserves the rule so the feature row's dawn edge does not
+     * shunt its neighbours sideways. */
+    border-inline-start: 2px solid transparent;
+    padding-inline-start: 1.25rem;
+    border-top: 1px solid var(--color-grid);
+  }
+  .area:first-child { border-top: 0; }
+
+  @media (min-width: 40rem) {
+    .area {
+      grid-template-columns: 7.5rem minmax(0, 1fr);
+      align-items: baseline;
+    }
+  }
+
+  .rail {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  @media (min-width: 40rem) {
+    .rail { display: block; }
+  }
+
+  .figure {
+    display: block;
+    font-family: var(--font-data);
+    font-variant-numeric: tabular-nums;
+    font-weight: 400;
+    font-size: 1.0625rem;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+    color: var(--color-accent);
+  }
+  .figure-label {
+    display: block;
+    margin-top: 0.3rem;
+    font-family: var(--font-eyebrow);
+    font-size: 0.625rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+  }
+
+  .name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 1.15rem;
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+    color: var(--color-text);
+  }
+
+  .line {
+    margin: 0.5rem 0 0;
+    max-width: 52ch;
+    font-family: var(--font-body);
+    font-weight: 300;
+    font-size: clamp(0.95rem, 1.1vw, 1.0625rem);
+    line-height: 1.65;
+    color: var(--color-text-muted);
+  }
+
+  .entity {
+    margin: 0.7rem 0 0;
+    font-family: var(--font-data);
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    color: var(--color-text-faint);
+  }
+
+  /* --- the one line with a voice ------------------------------------------ */
+  .is-feature {
+    border-inline-start-color: var(--color-primary);
+    padding-block: 3rem;
+    background: radial-gradient(
+      120% 150% at 0% 50%,
+      var(--color-primary-soft) 0%,
+      transparent 62%
+    );
+  }
+  .is-feature .line {
+    margin-top: 0.75rem;
+    max-width: 26ch;
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+    line-height: 1.42;
+    color: var(--color-text);
+  }
+</style>

@@ -1,0 +1,165 @@
+---
+/* ============================================================================
+ * SheetRecord — one ruled record on the sheet.
+ *
+ * Every block on this page is the same object: a hairline, a numbered index
+ * column in the data face, and content in aligned columns to the right of it.
+ * Nothing is a card, nothing has a shadow, nothing has a corner.
+ *
+ * Two shapes:
+ *   split (default) — statement column (title + lead) | detail column (prose).
+ *                     Short measures, both columns ranging left off the same
+ *                     baseline. This is what makes it read as a document
+ *                     rather than a stack of paragraphs.
+ *   indexHeading    — the record's heading is set in the data face in the
+ *                     index column itself, like a schedule title, and the
+ *                     whole right side is given over to the slot.
+ *
+ * Semantic tokens only.
+ * ========================================================================== */
+export interface Props {
+  /** Anchor id; also derives the aria-labelledby target. */
+  id: string;
+  /** Filing number, e.g. "03". Set in the data face. */
+  num: string;
+  /** Short mono label above the number's rule. */
+  eyebrow?: string;
+  /** The record's heading. Always rendered as the section's h2. */
+  title: string;
+  lead?: string;
+  /** Put the heading in the index column and give the slot the full width. */
+  indexHeading?: boolean;
+}
+
+const { id, num, eyebrow, title, lead, indexHeading = false } = Astro.props;
+const headingId = `${id}-heading`;
+---
+
+<section class="record" id={id} aria-labelledby={headingId}>
+  <div class="record-index">
+    <span class="record-num">{num}</span>
+    {indexHeading ? (
+      <h2 class="record-schedule" id={headingId}>{title}</h2>
+    ) : (
+      eyebrow && <span class="record-eyebrow">{eyebrow}</span>
+    )}
+  </div>
+
+  <div class="record-body" data-split={String(!indexHeading)}>
+    {!indexHeading && (
+      <div class="record-statement">
+        <h2 class="record-title" id={headingId}>{title}</h2>
+        {lead && <p class="record-lead">{lead}</p>}
+      </div>
+    )}
+    <div class="record-detail"><slot /></div>
+  </div>
+</section>
+
+<style>
+  .record {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+    column-gap: 2.5rem;
+    border-top: 1px solid var(--color-rule);
+    padding: 1.6rem 0 1.9rem;
+  }
+
+  /* --- index column ------------------------------------------------------ */
+  .record-index { min-width: 0; }
+
+  .record-num {
+    display: block;
+    font-family: var(--font-data);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--color-text-faint);
+  }
+  .record-eyebrow,
+  .record-schedule {
+    display: block;
+    margin: 0.55rem 0 0;
+    font-family: var(--font-eyebrow);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    line-height: 1.5;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+  .record-schedule { color: var(--color-text); }
+
+  /* --- content ----------------------------------------------------------- */
+  .record-body { min-width: 0; }
+  .record-body[data-split='true'] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    column-gap: 2.5rem;
+    align-items: start;
+  }
+
+  .record-statement { min-width: 0; }
+
+  .record-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.1875rem, 2.2vw, 1.5rem);
+    font-weight: 500;
+    line-height: 1.24;
+    letter-spacing: -0.014em;
+    color: var(--color-text);
+    max-width: 24ch;
+    text-wrap: balance;
+  }
+  .record-lead {
+    margin: 0.75rem 0 0;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--color-text-muted);
+    max-width: 36ch;
+  }
+
+  .record-detail { min-width: 0; }
+
+  /* Markdown bodies arrive here from the content collection. */
+  .record-detail :global(p) {
+    margin: 0 0 0.85rem;
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    font-weight: 300;
+    line-height: 1.68;
+    color: var(--color-text);
+    max-width: 52ch;
+  }
+  .record-detail :global(p:last-child) { margin-bottom: 0; }
+  .record-detail :global(a) {
+    color: var(--color-primary);
+    text-underline-offset: 0.18em;
+  }
+
+  @media (max-width: 62rem) {
+    .record-body[data-split='true'] {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 1.1rem;
+    }
+    .record-lead { max-width: 52ch; }
+  }
+
+  @media (max-width: 44rem) {
+    .record {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 0.9rem;
+      padding: 1.3rem 0 1.6rem;
+    }
+    .record-index {
+      display: flex;
+      align-items: baseline;
+      gap: 0.9rem;
+    }
+    .record-eyebrow,
+    .record-schedule { margin-top: 0; }
+  }
+</style>

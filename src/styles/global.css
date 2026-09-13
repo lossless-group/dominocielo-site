@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+@source "../../src/**/*.astro";
+@source "../../src/**/*.svelte";
+@source "../../src/**/*.ts";
+
+@import "./themes/card.css";
+@import "./themes/sheet.css";
+@import "./themes/aperture.css";
+
+/* ============================================================================
+ * TIER 1 — NAMED TOKENS. Raw values only, BEM-ish `__` separator.
+ * Referenced ONLY from src/styles/themes/*.css. Never from a component.
+ *
+ * There was nothing to extract. Every colour on the live site is the stock
+ * WordPress Gutenberg swatch set (#0693e3, #00d084, #ff6900, #fcb900,
+ * #f78da7) — defaults nobody chose. So this palette is PROPOSED, not
+ * honoured, and it is drawn from the one considered visual the client does
+ * own: the headshot. Navy jacket, warm grey backdrop, white shirt.
+ * ========================================================================== */
+:root {
+  /* -- From the portrait: the only deliberate image on the live site -- */
+  --color__navy-ink:     #1B2233;
+  --color__navy-deep:    #0E1320;
+  --color__navy-mid:     #2D3A52;
+  --color__grey-warm:    #8A8681;
+  --color__grey-pale:    #C6C2BB;
+  --color__shirt:        #FBFAF8;
+
+  /* -- Card: bone, ink, one brass rule -- */
+  --color__bone:         #F4F2ED;
+  --color__bone-warm:    #E8E4DA;
+  --color__brass:        #A8834A;
+  --color__brass-lit:    #C9A063;
+
+  /* -- Sheet: the document. Colder, flatter, one signal blue -- */
+  --color__paper:        #F7F7F5;
+  --color__paper-rule:   #DCDBD6;
+  --color__graphite:     #22252A;
+  --color__graphite-mid: #5A5F66;
+  --color__signal-blue:  #2E5C8A;
+
+  /* -- Aperture: orbit. Night ground, a horizon, a dawn terminator --
+   * The nod is to synthetic-aperture radar — seeing through cloud and dark —
+   * which is what the principal's company actually does. */
+  --color__void-night:   #070A12;
+  --color__void-deep:    #04060C;
+  --color__horizon:      #1E3350;
+  --color__dawn:         #E5A05C;
+  --color__sar-cyan:     #6FD3E8;
+
+  /* -- Vibrant-only phosphors. Dark grounds only. -- */
+  --color__neon-amber:   #FFC24A;
+  --color__neon-cyan:    #4DE8FF;
+  --color__neon-rose:    #FF6E8A;
+
+  /* -- Neutrals -- */
+  --color__white:        #FFFFFF;
+  --color__black:        #000000;
+
+  /* -- Type. One display face per direction so the three read as three
+   *    different objects, not three skins. -- */
+  --font__instrument:    'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+  --font__spectral:      'Spectral', 'Iowan Old Style', Georgia, serif;
+  --font__plex-sans:     'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --font__plex-mono:     'IBM Plex Mono', 'SF Mono', ui-monospace, monospace;
+  --font__inter:         'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* ============================================================================
+ * Global ground + motion contract
+ * ========================================================================== */
+html {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+html.theme-transition, html.theme-transition * {
+  transition: background-color 260ms ease, color 260ms ease, border-color 260ms ease;
+}
+body { background-color: var(--color-background); min-height: 100vh; overflow-x: hidden; }
+*, *::before, *::after { box-sizing: border-box; }
+img, svg, video { max-width: 100%; height: auto; }
+::selection { background: var(--color-primary); color: var(--color-background); }
+:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; border-radius: 2px; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.tabular {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}

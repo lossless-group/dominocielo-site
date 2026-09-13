@@ -1,0 +1,132 @@
+---
+/* Developer-facing catalogue. The one page where DIRECTION is switchable at
+ * runtime, so a component can be seen under all three palettes without
+ * leaving the page. */
+import { getCollection } from 'astro:content';
+import BaseThemeLayout from '../../layouts/BaseThemeLayout.astro';
+import ModeToggle from '../../components/ui/ModeToggle.astro';
+import Plate from '../../components/basics/Plate.astro';
+import { PRINCIPAL, WORD_BUDGET } from '../../lib/site';
+
+const areas = (await getCollection('areas')).sort((a, b) => a.data.order - b.data.order);
+---
+<BaseThemeLayout
+  title="Design system — Meridian"
+  description="The live catalogue, switchable across all three directions and all three modes."
+  theme="card" mode="light" themeSwitchable={true}
+>
+  <header class="chrome">
+    <a class="back" href="/">&larr; Directions</a>
+    <div class="ctl">
+      <div class="pick" role="group" aria-label="Direction">
+        <button type="button" data-set-theme="card" aria-pressed="true">Card</button>
+        <button type="button" data-set-theme="sheet" aria-pressed="false">Sheet</button>
+        <button type="button" data-set-theme="aperture" aria-pressed="false">Aperture</button>
+      </div>
+      <ModeToggle />
+    </div>
+  </header>
+
+  <main class="wrap" id="main">
+    <p class="eyebrow">Design system</p>
+    <h1>Nine combinations, one set of parts.</h1>
+    <p class="lede">
+      Three directions &times; three modes. Switch both with the controls above.
+      If something only looks right in one combination, it is not done.
+    </p>
+
+    <section>
+      <h2>The constraint, as a number</h2>
+      <p class="note">
+        The live site is 300 words. <code>WORD_BUDGET</code> is <strong class="tabular">{WORD_BUDGET}</strong>,
+        and each direction's build is checked against it. The content schema
+        enforces one sentence per investment area &mdash; an author who writes a
+        second one has broken the brief, not extended it.
+      </p>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Area</th><th>Line</th><th>Figure</th><th>Entity</th></tr></thead>
+          <tbody>
+            {areas.map((a) => (
+              <tr>
+                <td>{a.data.name}</td>
+                <td class="ln">{a.data.line}</td>
+                <td class="tabular">{a.data.figure ?? '—'}</td>
+                <td>{a.data.entity ?? '—'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Plate <span class="hn">image treatment</span></h2>
+      <p class="note">
+        Blend-mode based: the ground dissolves in light (<code>multiply</code>) and
+        inverts and screens in dark and vibrant, with the art tinted toward the
+        active <code>--color-primary</code>. Here it is carrying the one photograph.
+      </p>
+      <ul class="plates">
+        <li><Plate src={PRINCIPAL.portrait} alt={PRINCIPAL.portrait_alt} ratio="1 / 1" tint={0} caption="tint 0" /></li>
+        <li><Plate src={PRINCIPAL.portrait} alt={PRINCIPAL.portrait_alt} ratio="1 / 1" tint={0.35} caption="tint 0.35" /></li>
+        <li><Plate src={PRINCIPAL.portrait} alt={PRINCIPAL.portrait_alt} ratio="1 / 1" tint={0.8} caption="tint 0.8" /></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Token contract</h2>
+      <p class="note">All three directions define exactly this set. Anything missing is a missing token, not a licence to reach for a raw <code>__</code> value.</p>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Group</th><th>Tokens</th></tr></thead>
+          <tbody>
+            <tr><td>type</td><td><code>--font-display --font-body --font-data --font-eyebrow</code></td></tr>
+            <tr><td>ground</td><td><code>--color-background --color-surface --color-surface-raised</code></td></tr>
+            <tr><td>ink</td><td><code>--color-text --color-text-muted --color-text-faint</code></td></tr>
+            <tr><td>signal</td><td><code>--color-primary --color-primary-soft --color-accent</code></td></tr>
+            <tr><td>lines</td><td><code>--color-border --color-rule --color-grid</code></td></tr>
+            <tr><td>shape</td><td><code>--radius-control --page-measure --page-gutter</code></td></tr>
+            <tr><td>effects</td><td><code>--fx-grain-opacity --fx-glow-opacity</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script is:inline>
+    document.querySelectorAll('[data-set-theme]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (window.themeSwitcher) window.themeSwitcher.setTheme(b.getAttribute('data-set-theme'));
+        document.querySelectorAll('[data-set-theme]').forEach(function (o) {
+          o.setAttribute('aria-pressed', String(o === b));
+        });
+      });
+    });
+  </script>
+</BaseThemeLayout>
+<style>
+  .chrome { display:flex; align-items:center; justify-content:space-between; gap:1.5rem; padding:1.4rem var(--page-gutter); border-bottom:1px solid var(--color-border); }
+  .back { font-size:0.8125rem; color:var(--color-text-muted); text-decoration:none; }
+  .ctl { display:flex; align-items:center; gap:1rem; }
+  .pick { display:flex; }
+  .pick button { font:inherit; font-size:0.75rem; cursor:pointer; padding:0.4rem 0.7rem; background:transparent; color:var(--color-text-muted); border:1px solid var(--color-border); }
+  .pick button + button { border-left:0; }
+  .pick button:hover { color:var(--color-accent); border-color:var(--color-accent); }
+  .pick button[aria-pressed='true'] { color:var(--color-background); background:var(--color-primary); border-color:var(--color-primary); }
+  .wrap { max-width:var(--page-measure); margin:0 auto; padding:clamp(2.5rem,7vw,5rem) var(--page-gutter) 5rem; }
+  .eyebrow { margin:0 0 1rem; font-family:var(--font-eyebrow); font-size:0.6875rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--color-accent); }
+  h1 { margin:0; font-family:var(--font-display); font-weight:400; font-size:clamp(2rem,5vw,3.25rem); line-height:1.05; }
+  .lede { margin:1.25rem 0 0; max-width:58ch; font-size:1.0625rem; line-height:1.65; color:var(--color-text-muted); }
+  section { margin-top:3.5rem; padding-top:2rem; border-top:1px solid var(--color-rule); }
+  h2 { margin:0 0 1.25rem; font-family:var(--font-display); font-weight:400; font-size:1.5rem; display:flex; gap:0.75rem; align-items:baseline; flex-wrap:wrap; }
+  .hn { font-family:var(--font-eyebrow); font-size:0.625rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--color-text-faint); }
+  .note { margin:0 0 1.5rem; max-width:62ch; font-size:0.9375rem; line-height:1.65; color:var(--color-text-muted); }
+  code { font-family:var(--font-data); font-size:0.8125em; color:var(--color-accent); }
+  .scroll { overflow-x:auto; }
+  table { border-collapse:collapse; width:100%; min-width:36rem; font-size:0.875rem; }
+  th, td { text-align:left; padding:0.6rem 0.75rem; border-bottom:1px solid var(--color-grid); vertical-align:top; }
+  th { font-family:var(--font-eyebrow); font-size:0.625rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--color-text-faint); border-bottom-color:var(--color-rule); }
+  .ln { color:var(--color-text-muted); max-width:34ch; }
+  .plates { list-style:none; margin:0; padding:0; display:grid; gap:1.5rem; grid-template-columns:repeat(3,1fr); }
+</style>

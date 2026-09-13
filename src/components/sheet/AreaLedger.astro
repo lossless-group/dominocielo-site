@@ -1,0 +1,192 @@
+---
+/* ============================================================================
+ * AreaLedger — the four investment areas as a ruled schedule.
+ *
+ * Four items with one sentence each is not a table, so this is a definition
+ * list laid out on a grid: <dt> carries the promoted figure, the area name
+ * and (where one exists) the named entity; <dd> carries the single line.
+ * Hairlines run the full width of both columns so the rows read as ledger
+ * entries rather than as four stacked blocks.
+ *
+ * The FIGURES are the point. They are the only numbers on the site and a
+ * document is where numbers belong, so they are set in the data face at real
+ * size, in --color-accent, which is the token this direction reserves for
+ * figure ink. --fx-glow-opacity gives them the page's only glow, which is
+ * zero in light and only really burns in vibrant.
+ *
+ * One row is different. The area whose line contains the word "vibes" is the
+ * single sentence on the site that sounds like a person, so it is handed to
+ * MarginNote instead of being set as ledger copy. Detecting it by content
+ * rather than by index keeps that decision honest if the content changes.
+ *
+ * Semantic tokens only.
+ * ========================================================================== */
+import MarginNote from './MarginNote.astro';
+
+export interface Area {
+  name: string;
+  line: string;
+  entity?: string;
+  figure?: string;
+  figure_label?: string;
+  /* Set in the content file. See src/content.config.ts for why this is
+   * content rather than something a template infers. */
+  feature?: boolean;
+}
+
+export interface Props {
+  areas: readonly Area[];
+}
+
+const { areas } = Astro.props;
+
+/* Prefer the `feature` flag from the content file; the word-match stays only
+ * as a fallback for an entry that predates the flag. */
+const isMarginal = (line: string, flagged?: boolean) =>
+  flagged ?? /\bvibes\b/i.test(line);
+---
+
+<dl class="ledger">
+  {areas.map((area) => (
+    <>
+      <dt class="ledger-term">
+        <span class="ledger-fig">
+          {area.figure && <span class="ledger-fig-value">{area.figure}</span>}
+          {area.figure_label && <span class="ledger-fig-label">{area.figure_label}</span>}
+        </span>
+        <span class="ledger-id">
+          <span class="ledger-name">{area.name}</span>
+          {area.entity && <span class="ledger-entity">{area.entity}</span>}
+        </span>
+      </dt>
+      <dd class="ledger-def" data-marginal={String(isMarginal(area.line, area.feature))}>
+        {isMarginal(area.line, area.feature)
+          ? <MarginNote text={area.line} />
+          : <p class="ledger-line">{area.line}</p>}
+      </dd>
+    </>
+  ))}
+</dl>
+
+<style>
+  .ledger {
+    margin: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 17rem) minmax(0, 1fr);
+    column-gap: 2.5rem;
+  }
+
+  .ledger-term,
+  .ledger-def {
+    border-top: 1px solid var(--color-border);
+    padding: 1.05rem 0 1.15rem;
+    margin: 0;
+    min-width: 0;
+  }
+  /* The schedule opens on its own heavier rule. */
+  .ledger-term:first-of-type,
+  .ledger-term:first-of-type + .ledger-def {
+    border-top-color: var(--color-rule);
+  }
+
+  /* --- term: figure | name ------------------------------------------------ */
+  .ledger-term {
+    display: grid;
+    grid-template-columns: minmax(0, 7.25rem) minmax(0, 1fr);
+    column-gap: 1.15rem;
+    align-items: start;
+  }
+
+  .ledger-fig {
+    display: block;
+    position: relative;
+    min-width: 0;
+  }
+  /* The page's only glow. Zero in light; amber in vibrant. */
+  .ledger-fig::before {
+    content: '';
+    position: absolute;
+    inset: -0.35em -0.5em 0.1em;
+    background: radial-gradient(closest-side, var(--color-accent), transparent 72%);
+    opacity: var(--fx-glow-opacity);
+    filter: blur(12px);
+    pointer-events: none;
+  }
+  .ledger-fig-value,
+  .ledger-fig-label {
+    position: relative;
+    display: block;
+  }
+  .ledger-fig-value {
+    font-family: var(--font-data);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+    font-size: clamp(1.4375rem, 3.1vw, 1.875rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--color-accent);
+    white-space: nowrap;
+  }
+  .ledger-fig-label {
+    margin-top: 0.45rem;
+    font-family: var(--font-data);
+    font-size: 0.625rem;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    line-height: 1.4;
+    color: var(--color-text-faint);
+  }
+
+  .ledger-id { display: block; min-width: 0; padding-top: 0.1rem; }
+  .ledger-name {
+    display: block;
+    font-family: var(--font-data);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+    line-height: 1.4;
+    color: var(--color-text);
+  }
+  .ledger-entity {
+    display: block;
+    margin-top: 0.4rem;
+    font-family: var(--font-data);
+    font-size: 0.6875rem;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    line-height: 1.5;
+    color: var(--color-text-muted);
+  }
+
+  /* --- definition: one sentence ------------------------------------------ */
+  .ledger-line {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    font-weight: 300;
+    line-height: 1.66;
+    color: var(--color-text);
+    max-width: 46ch;
+  }
+  /* The marginal row gets air the others do not. */
+  .ledger-def[data-marginal='true'] { padding: 1.35rem 0 1.5rem; }
+
+  @media (max-width: 62rem) {
+    .ledger { grid-template-columns: minmax(0, 1fr); }
+    .ledger-def {
+      border-top: 0;
+      padding-top: 0.55rem;
+    }
+    .ledger-term:first-of-type + .ledger-def { border-top-color: transparent; }
+    .ledger-def[data-marginal='true'] { padding: 0.7rem 0 1.2rem; }
+  }
+
+  @media (max-width: 30rem) {
+    .ledger-term {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 0.75rem;
+    }
+  }
+</style>

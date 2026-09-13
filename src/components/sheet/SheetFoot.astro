@@ -1,0 +1,70 @@
+---
+/* ============================================================================
+ * SheetFoot — the colophon strip at the bottom of the sheet.
+ *
+ * A filed page ends by telling you what it is and where it came from. Here
+ * that is the way back to the direction chooser on the left, and the
+ * direction's own identifier on the right, both in the data face, separated
+ * from the last record by the same hairline as everything else.
+ *
+ * Semantic tokens only.
+ * ========================================================================== */
+export interface Props {
+  /** Where the chooser lives. */
+  href: string;
+  /** Link text back to the chooser. */
+  back: string;
+  /** This direction's identifier, e.g. "Direction B · Sheet". */
+  stamp: string;
+}
+
+const { href, back, stamp } = Astro.props;
+---
+
+<footer class="foot">
+  <a class="foot-back" href={href}>
+    <span class="foot-arrow" aria-hidden="true">←</span>
+    <span>{back}</span>
+  </a>
+  <p class="foot-stamp">{stamp}</p>
+</footer>
+
+<style>
+  .foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+    border-top: 2px solid var(--color-text);
+    padding-top: 1rem;
+    margin-top: 0.25rem;
+  }
+
+  .foot-back {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    font-family: var(--font-data);
+    font-size: 0.75rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25em;
+    text-decoration-color: var(--color-primary-soft);
+    transition: text-decoration-color 150ms ease;
+  }
+  .foot-back:hover { text-decoration-color: var(--color-primary); }
+  .foot-arrow { font-family: var(--font-data); }
+
+  .foot-stamp {
+    margin: 0;
+    font-family: var(--font-data);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+  }
+</style>

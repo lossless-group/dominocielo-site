@@ -1,0 +1,119 @@
+---
+/* ============================================================================
+ * KeyValue — the filed block: mono label, mono value, hairline between rows.
+ *
+ * Used for the giving entries and for contact. Everything in it is set in the
+ * data face, which is the rule that makes a phone number, a postal line and
+ * an LLC name look like they came off a form rather than out of a paragraph.
+ *
+ * --color-primary (the sheet's single non-neutral) appears ONLY on the values
+ * that are links: the addresses you can act on. Labels and plain values stay
+ * ink, so colour on this page always means "clickable".
+ *
+ * Semantic tokens only.
+ * ========================================================================== */
+export interface Row {
+  label: string;
+  /** Single-line value. */
+  value?: string;
+  /** Makes `value` a link. */
+  href?: string;
+  /** Multi-line value, e.g. a postal address. */
+  lines?: readonly string[];
+  /** A run of links on one row, e.g. social profiles. */
+  links?: readonly { readonly label: string; readonly href: string }[];
+}
+
+export interface Props {
+  rows: readonly Row[];
+  /** Accessible name for the block. */
+  label?: string;
+}
+
+const { rows, label } = Astro.props;
+---
+
+<dl class="kv" aria-label={label}>
+  {rows.map((row) => (
+    <>
+      <dt class="kv-key">{row.label}</dt>
+      <dd class="kv-val">
+        {row.href && row.value && (
+          <a class="kv-link" href={row.href}>{row.value}</a>
+        )}
+        {!row.href && row.value && <span>{row.value}</span>}
+        {row.lines && (
+          <span class="kv-lines">
+            {row.lines.map((line) => <span class="kv-line">{line}</span>)}
+          </span>
+        )}
+        {row.links && (
+          <span class="kv-links">
+            {row.links.map((link) => (
+              <a class="kv-link" href={link.href} rel="me noopener noreferrer" target="_blank">{link.label}</a>
+            ))}
+          </span>
+        )}
+      </dd>
+    </>
+  ))}
+</dl>
+
+<style>
+  .kv {
+    margin: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 6.5rem) minmax(0, 1fr);
+    column-gap: 1.5rem;
+  }
+
+  .kv-key,
+  .kv-val {
+    margin: 0;
+    padding: 0.6rem 0;
+    border-top: 1px solid var(--color-border);
+    font-family: var(--font-data);
+    font-size: 0.8125rem;
+    line-height: 1.55;
+    min-width: 0;
+  }
+
+  .kv-key {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+    padding-top: 0.72rem;
+  }
+
+  .kv-val {
+    font-weight: 300;
+    color: var(--color-text);
+    overflow-wrap: anywhere;
+  }
+
+  .kv-lines { display: block; }
+  .kv-line { display: block; }
+
+  .kv-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1.1rem;
+  }
+
+  .kv-link {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+    text-decoration-color: var(--color-primary-soft);
+    transition: text-decoration-color 150ms ease;
+  }
+  .kv-link:hover { text-decoration-color: var(--color-primary); }
+
+  @media (max-width: 30rem) {
+    .kv { grid-template-columns: minmax(0, 1fr); }
+    .kv-val { border-top: 0; padding-top: 0; }
+  }
+</style>

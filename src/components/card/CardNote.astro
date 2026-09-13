@@ -1,0 +1,92 @@
+---
+/* ============================================================================
+ * CardNote — a passage of prose on the back of the card.
+ *
+ * Used three times (family, principal, giving) and deliberately identical
+ * each time: a mono label, a serif line, a lead, a short body. No border, no
+ * panel, no icon — the only thing separating one note from the next is space.
+ *
+ * The `aside` slot is for the one extra object a note may carry: the portrait
+ * on the principal, the fund line on giving. Nothing else goes in it.
+ *
+ * Tokens read: --font-eyebrow, --font-display, --font-body, --color-text,
+ *   --color-text-muted.
+ * ========================================================================== */
+export interface Props {
+  /** Short mono label. Becomes the section's h2. */
+  eyebrow: string;
+  title: string;
+  lead?: string;
+  /** Used to wire aria-labelledby. Must be unique on the page. */
+  id: string;
+}
+
+const { eyebrow, title, lead, id } = Astro.props;
+---
+
+<section class="note" aria-labelledby={`${id}-label`}>
+  <h2 class="note-label" id={`${id}-label`}>{eyebrow}</h2>
+  <p class="note-title">{title}</p>
+  {lead && <p class="note-lead">{lead}</p>}
+  <div class="note-body"><slot /></div>
+  <slot name="aside" />
+</section>
+
+<style>
+  .note {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .note-label {
+    margin: 0;
+    font-family: var(--font-eyebrow);
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .note-title {
+    margin: clamp(0.85rem, 2vw, 1.25rem) 0 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.5rem, 2.7vw, 2.125rem);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--color-text);
+    max-width: 22ch;
+  }
+
+  .note-lead {
+    margin: 0.85rem 0 0;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.55;
+    color: var(--color-text);
+    max-width: 38ch;
+  }
+
+  .note-body {
+    margin-top: 0.85rem;
+    max-width: 44ch;
+  }
+
+  /* Rendered markdown arrives from the collection, so these have to be
+   * global-within-scope. Paragraphs only — the corpus has nothing else. */
+  .note-body :global(p) {
+    margin: 0 0 0.75em;
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.75;
+    color: var(--color-text-muted);
+  }
+
+  .note-body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+</style>

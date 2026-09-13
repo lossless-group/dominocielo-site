@@ -1,0 +1,120 @@
+---
+/* ============================================================================
+ * Portrait — the one photograph on the site, and the only thing here that is
+ * not type or gradient. It gets a real treatment rather than a border.
+ *
+ * The source file is 968×968 RGBA, already circularly cropped with transparent
+ * corners, so it keys onto the ground with no matte. Four layers on top of it,
+ * inside a single isolated stacking context, in this order:
+ *
+ *   img       untouched geometry. No crop, no zoom, no object-position trick —
+ *             a 1:1 frame on a 1:1 asset, so the face is never distorted.
+ *   wash      --portrait-wash at --portrait-wash-opacity, in
+ *             --portrait-wash-blend. soft-light in dark (warms and deepens
+ *             without staining skin), soft-light at half strength in light,
+ *             a hard `color` pull in vibrant.
+ *   vignette  a radial to --portrait-vignette, which every mode keys to its
+ *             own GROUND. The rim therefore dissolves into the sky instead of
+ *             ending at an edge — placed, not pasted.
+ *   ring      one hairline in --portrait-ring, plus an outer tick ring in
+ *             --color-accent: a dashed circle, the instrument signal, sized
+ *             just outside the image. Static; the page's motion budget is
+ *             spent on the sky.
+ *
+ * Degrades: forced-colors and print drop every overlay and show the plain
+ * photograph, which is the correct fallback for a photograph.
+ * ========================================================================== */
+export interface Props {
+  src: string;
+  alt: string;
+  /** Longest edge of the rendered circle. */
+  size?: string;
+}
+const { src, alt, size = 'clamp(9rem, 26vw, 15rem)' } = Astro.props;
+---
+
+<figure class="portrait" style={`--portrait-size:${size};`}>
+  <div class="portrait-frame">
+    <img class="portrait-img" src={src} alt={alt} width="968" height="968" decoding="async" loading="lazy" />
+    <span class="portrait-wash" aria-hidden="true"></span>
+    <span class="portrait-vignette" aria-hidden="true"></span>
+    <span class="portrait-ring" aria-hidden="true"></span>
+  </div>
+  <svg class="portrait-ticks" viewBox="0 0 200 200" fill="none" aria-hidden="true" focusable="false">
+    <circle cx="100" cy="100" r="97" stroke="currentColor" stroke-width="1"
+            stroke-dasharray="0.75 5.25" vector-effect="non-scaling-stroke" />
+  </svg>
+</figure>
+
+<style>
+  .portrait {
+    position: relative;
+    margin: 0;
+    width: var(--portrait-size);
+    aspect-ratio: 1;
+    flex: 0 0 auto;
+  }
+
+  .portrait-frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    isolation: isolate;
+    box-shadow: 0 0 5rem -1.5rem var(--portrait-halo);
+  }
+
+  .portrait-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    /* 1:1 into 1:1. cover here is a no-op by design, kept only so an asset
+     * swap can never stretch the face. */
+    object-fit: cover;
+    filter: contrast(1.03) saturate(0.92);
+  }
+
+  .portrait-wash,
+  .portrait-vignette,
+  .portrait-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .portrait-wash {
+    background: var(--portrait-wash);
+    mix-blend-mode: var(--portrait-wash-blend);
+    opacity: var(--portrait-wash-opacity);
+  }
+
+  .portrait-vignette {
+    background: radial-gradient(circle at 50% 44%, transparent 48%, var(--portrait-vignette) 100%);
+  }
+
+  .portrait-ring {
+    border: 1px solid var(--portrait-ring);
+  }
+
+  .portrait-ticks {
+    position: absolute;
+    inset: -9%;
+    /* global.css clamps every svg to max-width:100%; this one is deliberately
+     * larger than its containing block, so opt out. */
+    max-width: none;
+    height: auto;
+    color: var(--color-accent);
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  @media (forced-colors: active), print {
+    .portrait-wash,
+    .portrait-vignette,
+    .portrait-ticks { display: none; }
+    .portrait-frame { box-shadow: none; }
+    .portrait-img { filter: none; }
+  }
+</style>

@@ -1,0 +1,120 @@
+---
+/* ============================================================================
+ * CardContact — the engraved line along the bottom edge.
+ *
+ * The page spends exactly one rule, and it is this one: a single hairline in
+ * --color-rule separating the card's message from its particulars. Everything
+ * below it is set in the data face, small, and deliberately unaccented — the
+ * email already had its moment at the top of the page, and repeating brass
+ * here would make the accent ordinary.
+ *
+ * Tokens read: --font-eyebrow, --font-data, --color-text, --color-text-muted,
+ *   --color-text-faint, --color-rule, --color-border.
+ * ========================================================================== */
+export interface SocialLink {
+  label: string;
+  href: string;
+}
+
+export interface Props {
+  addressLine: string;
+  addressCity: string;
+  email: string;
+  phone: string;
+  phoneHref: string;
+  social: readonly SocialLink[];
+}
+
+const { addressLine, addressCity, email, phone, phoneHref, social } = Astro.props;
+---
+
+<footer class="contact" aria-labelledby="contact-label">
+  <h2 class="contact-label" id="contact-label">Contact</h2>
+
+  <address class="contact-lines tabular">
+    <span class="contact-line">{addressLine}</span>
+    <span class="contact-line">{addressCity}</span>
+  </address>
+
+  <p class="contact-lines tabular">
+    <a class="contact-link" href={`mailto:${email}`}>{email}</a>
+    <a class="contact-link" href={phoneHref}>{phone}</a>
+  </p>
+
+  <ul class="contact-social tabular">
+    {social.map((item) => (
+      <li>
+        <a class="contact-link" href={item.href} rel="me noopener noreferrer" target="_blank">
+          {item.label}
+        </a>
+      </li>
+    ))}
+  </ul>
+</footer>
+
+<style>
+  .contact {
+    /* The page's one and only rule. */
+    border-top: 1px solid var(--color-rule);
+    padding-top: clamp(1.25rem, 3vw, 2rem);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+  }
+
+  .contact-label {
+    margin: 0;
+    font-family: var(--font-eyebrow);
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .contact-lines {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-style: normal;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--color-text-muted);
+  }
+
+  .contact-line {
+    display: block;
+  }
+
+  .contact-social {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1.25rem;
+    font-size: 0.8125rem;
+  }
+
+  .contact-link {
+    color: var(--color-text);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 0.12em;
+    transition: border-color 160ms ease;
+  }
+
+  .contact-link:hover,
+  .contact-link:focus-visible {
+    border-bottom-color: var(--color-text);
+  }
+
+  @media (min-width: 56rem) {
+    .contact {
+      grid-template-columns: 11rem minmax(0, 1fr) minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 2rem;
+    }
+  }
+</style>
