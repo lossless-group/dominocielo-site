@@ -73,7 +73,7 @@ You pick one. The other two are deleted. Nothing else changes.
 
 **The live site is 300 words on one page, and it stays that way.**
 
-This is the inverse of the sibling spike ([`gth-site`](../gth-site)), where a
+This is the inverse of the sibling spike ([`gth-site`](https://github.com/lossless-group/gth-site)), where a
 content-heavy site buried the reader in vocabulary. Here there is nothing to cut
 and the client has explicitly asked for simple. The design problem is the harder
 one: **make brevity read as confidence rather than as an unfinished page.**
@@ -134,7 +134,7 @@ job." The discipline is in the code, not in a document nobody opens:
 
 Astro 7 · Tailwind 4 (via `@tailwindcss/vite`) · pnpm. No React, no JSX, no MDX.
 Substrate (layouts, mode switcher, `Plate`, token architecture) is lifted from
-[`gth-site`](../gth-site) rather than re-derived — same patterns, per the
+[`gth-site`](https://github.com/lossless-group/gth-site) rather than re-derived — same patterns, per the
 pseudomonorepos discipline.
 
 ```bash
@@ -147,7 +147,9 @@ pnpm exec astro check
 Not a member of the astro-knots pnpm workspace; installs standalone with its own
 lockfile so it can deploy independently.
 
-To run this alongside the two sibling spikes on auto-assigned ports:
+To run this alongside the two sibling spikes on auto-assigned ports — from an
+[astro-knots](https://github.com/lossless-group/astro-knots) workspace checkout,
+where all three are present:
 
 ```bash
 ../../scripts/dev-sites.sh
@@ -168,7 +170,7 @@ src/
 ```
 
 Two-tier tokens and the three-mode contract work exactly as in
-[`gth-site`](../gth-site); the contract is documented at the top of
+[`gth-site`](https://github.com/lossless-group/gth-site); the contract is documented at the top of
 `src/styles/themes/card.css`.
 
 ## Known gaps
