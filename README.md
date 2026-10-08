@@ -34,6 +34,8 @@
 
 ## Three versions of your page
 
+**See it live:** https://lossless-group.github.io/dominocielo-site/
+
 Same words, same facts, three different ways of displaying them. Open each, see
 which one sounds like you, and tell us. The other two get deleted and nothing
 else changes.
@@ -113,6 +115,86 @@ alpha circle cut into it, at half the file size.
 - **Retiring a direction is a delete.** The three never share code.
 - **The catalogue can't drift**, because `/design-system` is built from the same
   components the live pages use.
+
+# Take What You Like, With Claude
+
+You don't have to adopt this whole site to use it. If you like one direction,
+one section, or just the colours, you can have Claude lift that piece into
+whatever your site is built on. The repo is public and written so an agent can
+read it.
+
+## The fast way: Claude Code
+
+[Claude Code](https://claude.com/claude-code) runs in your terminal and can
+read this repo directly.
+
+```bash
+git clone https://github.com/lossless-group/dominocielo-site.git
+cd dominocielo-site
+pnpm install          # Node 22+, pnpm 10
+pnpm dev              # see all three directions at http://localhost:4321
+claude                # start Claude Code in this folder
+```
+
+Already cloned? `git pull origin main` brings in anything that has changed.
+
+Then ask for what you want in plain words. Some prompts that work well:
+
+> Read the README, then show me which files make up the Aperture direction.
+
+> Copy the Card direction into my site at `~/code/my-site`. My site is built
+> with [Next.js / Webflow export / plain HTML / …]. Keep the copy, the colours
+> and the type; adapt the markup to my stack.
+
+> I only want the horizon sky from Aperture, light and dark, as a background
+> for my existing homepage. Port `src/components/aperture/Sky.astro` and the
+> tokens it needs.
+
+> Take the Sheet direction's colour palette and fonts and apply them to my
+> current site. Don't change my layout.
+
+> Change my email to new@example.com and my second investment area to
+> "Private credit", then rebuild and show me all three directions again.
+
+To work on your own site instead, start Claude Code there and point it here:
+*"Use https://github.com/lossless-group/dominocielo-site as the reference and
+bring over the Card direction."*
+
+## The no-install way: Claude in the browser
+
+At [claude.ai](https://claude.ai), paste a file's raw URL and ask Claude to
+adapt it. Every file is at
+`https://raw.githubusercontent.com/lossless-group/dominocielo-site/main/<path>`.
+For example, paste the Aperture page and its theme:
+
+- `…/main/src/pages/aperture.astro`
+- `…/main/src/styles/themes/aperture.css`
+
+then ask: *"Turn this into a single HTML file I can drop into my site."*
+
+## What to point Claude at
+
+| If you want… | Point Claude at |
+|---|---|
+| **Your words** (sections, investment areas) | `src/content/sections/*.md`, `src/content/areas/*.md` |
+| **Your facts** (name, address, email, phone, socials, the Fund) | `src/lib/site.ts` |
+| **A direction's colours and type** | `src/styles/themes/{card,sheet,aperture}.css` (plus `src/styles/global.css` for the raw values) |
+| **A whole direction** | `src/pages/{card,sheet,aperture}.astro` and `src/components/{card,sheet,aperture}/` |
+| **The fonts** | the Google Fonts link in `src/layouts/BoilerPlateHTML.astro` |
+| **Your portrait, with the real transparent circle** | `public/img/portrait-gabe-dominocielo.png` |
+| **Light / dark switching** | `src/utils/mode-switcher.js` and `src/components/ui/ModeToggle.astro` |
+
+## Two things to tell Claude so it doesn't wander
+
+- **Keep it short.** Your live site is about 300 words, and every direction
+  here is held to that (`WORD_BUDGET` in `src/lib/site.ts`). Tell Claude not
+  to pad the copy.
+- **The "primarily vibes" line is special on purpose.** It's marked
+  `feature: true` in its content file and each direction treats it
+  differently. Ask Claude to keep that marker if it moves the content.
+
+If you'd rather we did the porting, just tell us which direction or section and
+where it should go.
 
 ---
 
