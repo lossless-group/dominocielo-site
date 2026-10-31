@@ -22,6 +22,7 @@ tags:
   - Restraint
   - Personal-Site
   - Information-Hierarchy
+type: Specs
 ---
 
 # Three Directions for a Single-Family-Office One-Pager
